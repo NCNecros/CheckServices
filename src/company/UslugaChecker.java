@@ -13,7 +13,7 @@ public class UslugaChecker {
         if (service.getDatn() == null || service.getDato() == null) {
             Human human = service.getParent().getParent();
             SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
-            result.add(human.getFio() + " " + human.getIma() + " " + human.getOtch() + "\t" + sdf.format(human.getDatr()) + "\tсодержит обращение с незакрытыми мероприятиями");
+            result.add(human.toString() + "\tсодержит обращение с незакрытыми мероприятиями");
         }
         return result;
     }
