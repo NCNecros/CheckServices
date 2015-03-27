@@ -73,9 +73,9 @@ public class Human implements Comparable {
             for (Treatment otherObr : obrasheniesWithOutCurrent) {
                 Boolean res = otherObr.getDoctor().equalsIgnoreCase(treatment.getDoctor()) &&
                         otherObr.getMkb().equalsIgnoreCase(treatment.getMkb());
-                if (res) {
+                if (res && treatment.getUslugi().values().stream().anyMatch(e -> !e.getKusl().startsWith("B04"))) {
                     SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
-                    result.add(toString() + "\tсодержит более одного обращения с одним диагнозом и одним врачом ("+sdf.format(treatment.getDatn())+")");
+                    result.add(toString() + "\t("+sdf.format(treatment.getDatn())+") более одного обращения");
                 }
             }
         }
