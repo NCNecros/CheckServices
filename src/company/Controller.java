@@ -103,6 +103,7 @@ public class Controller {
     private void saveErrorsToExcel(List<String> errors, String filename) throws IOException {
         Workbook wb = new HSSFWorkbook();
         Sheet sheet = wb.createSheet("Ошибки");
+        sheet.getPrintSetup().setPaperSize(PrintSetup.A4_PAPERSIZE);
 
         int counter = 0;
         Row row = sheet.createRow(0);
@@ -116,7 +117,7 @@ public class Controller {
             counter++;
             String[] err = line.split("\t");
             row = sheet.createRow(counter);
-            row.createCell(0).setCellValue(err[0]);
+            row.createCell(0, Cell.CELL_TYPE_STRING).setCellValue(err[0]);
             row.createCell(1).setCellValue(err[1]);
             row.createCell(2).setCellValue(err[2]);
             row.createCell(3).setCellValue(err[3]);
