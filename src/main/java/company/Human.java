@@ -10,6 +10,17 @@ public class Human implements Comparable {
 
     String fio;
     String ima;
+
+    public Human(){};
+
+    public Human(String isti, String fio, String ima, String otch, Date datr) {
+        this.fio = fio;
+        this.ima = ima;
+        this.otch = otch;
+        this.datr = datr;
+        this.isti = isti;
+    }
+
     String otch;
     Date datr;
     String isti;

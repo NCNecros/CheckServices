@@ -111,6 +111,15 @@
           </reportSet>
         </reportSets>
       </plugin>
+      <plugin>
+        <groupId>org.pitest</groupId>
+        <artifactId>pitest-maven</artifactId>
+        <version>LATEST</version>
+        <configuration>
+          <targetClasses><param>company.*</param></targetClasses>
+          <targetTests><param>company.*</param></targetTests>
+        </configuration>
+      </plugin>
     </plugins>
   </reporting>
 </project>
