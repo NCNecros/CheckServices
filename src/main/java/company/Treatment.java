@@ -1,5 +1,8 @@
 package company;
 
+import org.springframework.context.annotation.Scope;
+
+import javax.annotation.Resource;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -61,9 +64,8 @@ public class Treatment {
         for (Service service : getUslugi().values()) {
             result.addAll(UslugaChecker.check(service));
         }
-        checkForServiceDuplicates(result, human);
-
-//        checkForMissedService(result, human);
+//        checkForServiceDuplicates(result, human);
+        checkForMissedService(result, human);
 
         return result;
     }
@@ -153,7 +155,7 @@ public class Treatment {
             List<Service> servicesWithOutCurrent = new ArrayList<>(getUslugi().values());
             servicesWithOutCurrent.remove(service);
             result.addAll(servicesWithOutCurrent.stream()
-                    .filter(otherService -> service.isDuplicates(otherService))
+                    .filter(service::isDuplicates)
                     .map(otherService -> human + "\t" + "содержит дублирующуюся услугу")
                     .collect(Collectors.toList()));
         }

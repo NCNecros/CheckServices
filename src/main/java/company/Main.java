@@ -6,22 +6,18 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.support.ClassPathXmlApplicationContext;
 
 import java.io.FileNotFoundException;
 import java.io.UnsupportedEncodingException;
 
 
-public class Main extends Application {
+public class Main{
 
     public static void main(String[] args) throws FileNotFoundException, DBFException, UnsupportedEncodingException {
-        launch(args);
-    }
-
-    @Override
-    public void start(Stage primaryStage) throws Exception {
-        Parent root = FXMLLoader.load(getClass().getResource("sample.fxml"));
-        primaryStage.setTitle("Проверка счета");
-        primaryStage.setScene(new Scene(root, 300, 275));
-        primaryStage.show();
+        ApplicationContext context = new AnnotationConfigApplicationContext(AppConfig.class);
+        context.getBean(company.Stage.class).start();
     }
 }

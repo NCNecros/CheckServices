@@ -8,9 +8,9 @@ import javafx.stage.FileChooser;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.FileHeader;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
+import org.springframework.stereotype.*;
 
 import java.io.*;
 import java.nio.file.Files;
@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 /**
  * Created by Necros on 23.03.2015.
  */
+@org.springframework.stereotype.Service
 public class Controller {
     String dir = "d:/";
     @FXML
@@ -28,6 +29,7 @@ public class Controller {
 
     @FXML
     public void selectFile(ActionEvent actionEvent) throws IOException, ZipException {
+
         FileChooser fileChooser = new FileChooser();
         fileChooser.setInitialDirectory(new File(dir));
         fileChooser.setTitle("Выберите файл счета");
@@ -112,6 +114,7 @@ public class Controller {
         row.createCell(3).setCellValue("Ошибка");
         for (String line : errors.stream()
                 .distinct()
+                .sorted((e1, e2) -> e1.split("\t")[1].compareTo(e2.split("\t")[1]))
                 .collect(Collectors.toList())) {
             counter++;
             String[] err = line.split("\t");
