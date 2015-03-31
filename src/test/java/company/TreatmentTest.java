@@ -1,6 +1,7 @@
 package company;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.support.AnnotationConfigContextLoader;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
@@ -17,7 +18,7 @@ import static org.testng.Assert.assertEquals;
 import static org.testng.Assert.assertTrue;
 
 @Test
-@ContextConfiguration(classes = AppConfig.class )
+@ContextConfiguration(classes = AppConfig.class)
 public class TreatmentTest extends AbstractTestNGSpringContextTests {
     SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
     private Treatment treatment;
@@ -42,7 +43,7 @@ public class TreatmentTest extends AbstractTestNGSpringContextTests {
         human.setOtch("Иванович");
         human.setIsti("1111");
         human.setDatr(dateFormat.parse("01.01.2015"));
-        treatment = new Treatment();
+        treatment = applicationContext.getBean(Treatment.class);
         treatment.setParent(human);
     }
 
@@ -78,7 +79,58 @@ public class TreatmentTest extends AbstractTestNGSpringContextTests {
         treatment.getUslugi().put(2d, service);
         List<String> strings = treatment.checkUslugi();
         assertEquals(strings.size(), 1);
-        assertEquals(strings.get(0),"1111\tИванов Иван Иванович\t01.01.2015\tсодержит обращение с незакрытыми мероприятиями");
+        assertEquals(strings.get(0), "1111\tИванов Иван Иванович\t01.01.2015\tслучай лечения не содержит обращения к врачу-акушеру-гинекологу.");
 
+    }
+
+    @Test
+    public void TestCorrectTreatmentWithGinecologServices() throws ParseException {
+        Service service;
+        service = new Service();
+        service.setDatn(dateFormat.parse("01.01.2015"));
+        service.setDato(dateFormat.parse("01.01.2015"));
+        service.setParent(treatment);
+        service.setKusl(ginecologServices.get(0));
+        treatment.getUslugi().put(1d, service);
+
+        service = new Service();
+        service.setDatn(dateFormat.parse("02.01.2015"));
+        service.setDato(dateFormat.parse("02.01.2015"));
+        service.setParent(treatment);
+        service.setKusl(ginecologServices.get(0));
+        treatment.getUslugi().put(2d, service);
+
+        service = new Service();
+        service.setDatn(dateFormat.parse("02.01.2015"));
+        service.setDato(dateFormat.parse("02.01.2015"));
+        service.setParent(treatment);
+        service.setKusl("B01.001.019");
+        treatment.getUslugi().put(3d, service);
+
+        List<String> strings = treatment.checkUslugi();
+        assertEquals(strings.size(), 0);
+    }
+
+    @Test
+    public void TestOneServiceOfGinecologAndRedundantService() throws ParseException {
+        Service service;
+        service = new Service();
+        service.setDatn(dateFormat.parse("01.01.2015"));
+        service.setDato(dateFormat.parse("01.01.2015"));
+        service.setParent(treatment);
+        service.setKusl(ginecologServices.get(0));
+        treatment.getUslugi().put(1d, service);
+
+        service = new Service();
+        service.setDatn(dateFormat.parse("02.01.2015"));
+        service.setDato(dateFormat.parse("02.01.2015"));
+        service.setParent(treatment);
+        service.setKusl("B01.001.019");
+
+        treatment.getUslugi().put(3d, service);
+
+        List<String> strings = treatment.checkUslugi();
+        assertEquals(strings.size(), 1);
+        assertEquals(strings.get(0), "1111\tИванов Иван Иванович\t01.01.2015\tсодержит лишнее обращение к врачу-акушеру-гинекологу.");
     }
 }

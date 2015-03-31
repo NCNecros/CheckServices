@@ -1,5 +1,6 @@
 package company;
 
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.context.annotation.Scope;
 
 import javax.annotation.Resource;
@@ -9,7 +10,23 @@ import java.util.stream.Collectors;
 /**
  * Created by Necros on 19.03.2015.
  */
+@org.springframework.stereotype.Service
+@Scope(value = "prototype")
 public class Treatment {
+    private Treatment treatment;
+
+    @Resource
+    private List<String> ginecologServices;
+    @Resource
+    private List<String> pediatrServices;
+    @Resource
+    private List<String> nevrologServices;
+    @Resource
+    private List<String> lorServices;
+    @Resource
+    private List<String> oftalmologServices;
+    @Resource
+    private List<String> terapevtServices;
 
     Date datn;
     Date dato;
@@ -17,6 +34,7 @@ public class Treatment {
     String doctor;
     Human parent;
     Map<Double, Service> uslugi = new HashMap<>();
+
 
     public Date getDatn() {
         return datn;
@@ -87,6 +105,7 @@ public class Treatment {
         checkMissedTerapevtService(result, human, services);
         checkMissedHirurgService(result, human, services);
         checkMissedEndokrinologService(result, human, services);
+        checkForReduantService(result, human, services);
 
     }
 
@@ -147,6 +166,11 @@ public class Treatment {
         }
         if (services.size() > 1 && (services.contains("B01.047.014") || services.contains("B01.047.020")) && !services.contains("B01.047.022.01")) {
             result.add(human + "\t" + "случай лечения не содержит обращения к врачу-терапевту участковому.");
+        }
+    }
+    private void checkForReduantService(List<String> result, Human human, List<String> services){
+        if (CollectionUtils.containsAny(services, ginecologServices) && services.contains("B01.001.019") && services.size() ==2){
+            result.add(human + "\tсодержит лишнее обращение к врачу-акушеру-гинекологу.");
         }
     }
 
