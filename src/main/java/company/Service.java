@@ -11,6 +11,14 @@ public class Service {
     Date dato;
     String kusl;
 
+    public Service(String kusl, Date datn, Date dato, Treatment parent) {
+        this.kusl = kusl;
+        this.datn = datn;
+        this.parent = parent;
+        this.dato = dato;
+    }
+    public Service(){};
+
     public Treatment getParent() {
         return parent;
     }

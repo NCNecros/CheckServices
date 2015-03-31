@@ -63,23 +63,21 @@ public class TreatmentTest extends AbstractTestNGSpringContextTests {
 
     @Test
     public void TestMissedGinecologServices() throws ParseException {
-        Service service;
-        service = new Service();
-        service.setDatn(dateFormat.parse("01.01.2015"));
-        service.setDato(dateFormat.parse("01.01.2015"));
-        service.setParent(treatment);
-        service.setKusl(ginecologServices.get(0));
-        treatment.getUslugi().put(1d, service);
+        for (String ser: ginecologServices){
+            treatment.getUslugi().put(1d, new Service(ser,
+                    dateFormat.parse("01.01.2015"),
+                    dateFormat.parse("01.01.2015"),
+                    treatment));
 
-        service = new Service();
-        service.setDatn(dateFormat.parse("02.01.2015"));
-        service.setDato(dateFormat.parse("02.01.2015"));
-        service.setParent(treatment);
-        service.setKusl(ginecologServices.get(0));
-        treatment.getUslugi().put(2d, service);
-        List<String> strings = treatment.checkUslugi();
-        assertEquals(strings.size(), 1);
-        assertEquals(strings.get(0), "1111\tИванов Иван Иванович\t01.01.2015\tслучай лечения не содержит обращения к врачу-акушеру-гинекологу.");
+            treatment.getUslugi().put(2d, new Service(ser,
+                    dateFormat.parse("02.01.2015"),
+                    dateFormat.parse("02.01.2015"),
+                    treatment));
+
+            List<String> strings = treatment.checkUslugi();
+            assertEquals(strings.size(), 1, treatment.toString());
+            assertEquals(strings.get(0), "1111\tИванов Иван Иванович\t01.01.2015\tслучай лечения не содержит обращения к врачу-акушеру-гинекологу.");
+        }
 
     }
 
@@ -133,4 +131,6 @@ public class TreatmentTest extends AbstractTestNGSpringContextTests {
         assertEquals(strings.size(), 1);
         assertEquals(strings.get(0), "1111\tИванов Иван Иванович\t01.01.2015\tсодержит лишнее обращение к врачу-акушеру-гинекологу.");
     }
+
+
 }

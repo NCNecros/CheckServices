@@ -119,9 +119,7 @@ public class Treatment {
     }
 
     private void checkMissedGinekologService(List<String> result, Human human, List<String> services) {
-        if (services.size() > 1 && (services.contains("B01.001.001")
-                || services.contains("B01.001.003")
-                || services.contains("B01.001.011")) && !services.contains("B01.001.019")) {
+        if (services.size() > 1 && (CollectionUtils.containsAny(services,ginecologServices)) && !services.contains("B01.001.019")) {
             result.add(human + "\t" + "случай лечения не содержит обращения к врачу-акушеру-гинекологу.");
         }
     }
@@ -185,7 +183,14 @@ public class Treatment {
         }
     }
 
-
+    @Override
+    public String toString(){
+        String result="";
+        for (Service service : uslugi.values()){
+            result = result + "{"+service.getKusl()+"}";
+        }
+        return result;
+    }
     public Map<Double, Service> getUslugi() {
         return uslugi;
     }
