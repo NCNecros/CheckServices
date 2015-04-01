@@ -3,13 +3,16 @@ package company;
 import com.linuxense.javadbf.DBFException;
 import com.linuxense.javadbf.DBFField;
 import com.linuxense.javadbf.DBFReader;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
+@org.springframework.stereotype.Service
 public class DBFHelper {
     private DBFReader dbfReader;
 
@@ -37,7 +40,7 @@ public class DBFHelper {
                 humanMap.put(humanid, human);
             }
             human = humanMap.get(humanid);
-            Treatment treatment = new Treatment();
+            Treatment treatment = (Treatment) SpringApplicationContext.getBean("treatment");
             treatment.setParent(human);
             treatment.setDatn((Date) row[fieldList.get("DATN")]);
             treatment.setDato((Date) row[fieldList.get("DATO")]);
@@ -50,16 +53,19 @@ public class DBFHelper {
         dbfReader = new DBFReader(new FileInputStream(filename));
         dbfReader.setCharactersetName("cp866");
         Map<String, Integer> fieldList = new HashMap<>();
+
         for (Integer i = 0; i < dbfReader.getFieldCount(); i++) {
             DBFField field = dbfReader.getField(i);
             fieldList.put(field.getName(), i);
         }
+
         Map<Double, String> humansObrash = new HashMap<>();
         for (String str : humanMap.keySet()) {
             for (Double num : humanMap.get(str).getTreatmentList().keySet()) {
                 humansObrash.put(num, str);
             }
         }
+
         while ((row = dbfReader.nextRecord()) != null) {
             Double obrId = (Double) row[fieldList.get("SN")];
             Human human = humanMap.get(humansObrash.get(obrId));
@@ -80,5 +86,6 @@ public class DBFHelper {
                 uslugi.put(uslid, service);
             }
         }
+
     }
 }

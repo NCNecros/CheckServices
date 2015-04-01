@@ -4,6 +4,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.context.annotation.Scope;
 
 import javax.annotation.Resource;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -23,6 +24,7 @@ public class Treatment {
     public String OSMOTR_TERAPEVTA = "B01.047.022";
     public String OSMOTR_UTERAPEVTA = "B01.047.022.01";
     public String OSMOTR_ENDOCRINOLOG = "B01.058.013";
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
 
     private Treatment treatment;
 
@@ -125,77 +127,77 @@ public class Treatment {
 
     private void checkMissedPediatrService(List<String> result, Human human, List<String> services) {
         if (services.size() > 1 && services.contains("B01.031.014") && !services.contains("B01.031.016")) {
-            result.add(human + "\t" + "случай лечения не содержит обращения к врачу-педиатру.");
+            result.add(human + "\t" + "("+simpleDateFormat.format(getDatn())+")"+"добавить обращение к врачу-педиатру.");
         }
     }
 
     private void checkMissedUPediatrService(List<String> result, Human human, List<String> services) {
         if (services.size() > 1 && (services.contains("B01.031.013") || services.contains("B01.031.006")) && !services.contains("B01.031.016.01")) {
-            result.add(human + "\t" + "случай лечения не содержит обращения к врачу-педиатру участковому.");
+            result.add(human + "\t" + "("+simpleDateFormat.format(getDatn())+")"+" добавить обращение к врачу-педиатру участковому.");
         }
     }
 
     private void checkMissedGinekologService(List<String> result, Human human, List<String> services) {
-        if (services.size() > 1 && (CollectionUtils.containsAny(services,ginecologServices)) && !services.contains("B01.001.019")) {
-            result.add(human + "\t" + "случай лечения не содержит обращения к врачу-акушеру-гинекологу.");
+        if (services.size() > 1 && (CollectionUtils.containsAny(services, ginecologServices)) && !services.contains("B01.001.019")) {
+            result.add(human + "\t" +  "("+simpleDateFormat.format(getDatn())+")"+" добавить обращение к врачу-акушеру-гинекологу.");
         }
     }
 
     private void checkMissedNevrologService(List<String> result, Human human, List<String> services) {
         if (services.size() > 1 && (services.contains("B01.023.001")
                 || services.contains("B01.023.004")) && !services.contains("B01.023.012")) {
-            result.add(human + "\t" + "случай лечения не содержит обращения к врачу-неврологу.");
+            result.add(human + "\t" + " добавить обращение к врачу-неврологу.");
         }
     }
 
     private void checkMissedLORService(List<String> result, Human human, List<String> services) {
         if (services.size() > 1 && (services.contains("B01.028.001")) && !services.contains("B01.028.011")) {
-            result.add(human + "\t" + "случай лечения не содержит обращения к врачу-отоларингологу.");
+            result.add(human + "\t" + " добавить обращение к врачу-отоларингологу.");
         }
     }
 
     private void checkMissedOftalmologService(List<String> result, Human human, List<String> services) {
         if (services.size() > 1 && (services.contains("B01.029.001")
                 || services.contains("B01.029.006")) && !services.contains("B01.029.015")) {
-            result.add(human + "\t" + "случай лечения не содержит обращения к врачу-офтальмологу.");
+            result.add(human + "\t" + "добавить обращение к врачу-офтальмологу.");
         }
     }
 
     private void checkMissedHirurgService(List<String> result, Human human, List<String> services) {
         if (services.size() > 1 && (services.contains("B01.057.007")
                 || services.contains("B01.057.008")) && !services.contains("B01.057.010")) {
-            result.add(human + "\t" + "случай лечения не содержит обращения к врачу-хирургу.");
+            result.add(human + "\t" + " добавить обращения к врачу-хирургу.");
         }
     }
 
     private void checkMissedEndokrinologService(List<String> result, Human human, List<String> services) {
         if (services.size() > 1 && (services.contains("B01.058.001")
                 || services.contains("B01.058.010")) && !services.contains("B01.058.013")) {
-            result.add(human + "\t" + "случай лечения не содержит обращения к врачу-акушеру-гинекологу.");
+            result.add(human + "\t" + "("+treatment.getDatn()+")"+" добавить обращение к врачу-эндокринологу.");
         }
     }
 
     private void checkMissedTerapevtService(List<String> result, Human human, List<String> services) {
         if (services.size() > 1 && services.contains("B01.047.019") && !services.contains("B01.047.022")) {
-            result.add(human + "\t" + "случай лечения не содержит обращения к врачу-терапевту.");
+            result.add(human + "\t" + " добавить обращение к врачу-терапевту.");
         }
     }
 
     private void checkMissedUTerapevtService(List<String> result, Human human, List<String> services) {
         if (services.size() > 1 && (services.contains("B01.047.014") || services.contains("B01.047.020")) && !services.contains("B01.047.022.01")) {
-            result.add(human + "\t" + "случай лечения не содержит обращения к врачу-терапевту участковому.");
+            result.add(human + "\t" + " добавить обращение к врачу-терапевту участковому.");
         }
     }
 
     private void checkForReduantGinecologService(List<String> result, Human human, List<String> services){
         if (CollectionUtils.containsAny(services, ginecologServices) && services.contains(OSMOTR_GINECOLOGA) && services.size() ==2){
-            result.add(human + "\tсодержит лишнее обращение к врачу-акушеру-гинекологу.");
+            result.add(human + "\t лишнее обращение к врачу-акушеру-гинекологу.");
         }
     }
 
     private void checkForReduantNevrologService(List<String> result, Human human, List<String> services){
         if (CollectionUtils.containsAny(services, nevrologServices) && services.contains(OSMOTR_NEVROLOGA) && services.size() ==2){
-            result.add(human + "\tсодержит лишнее обращение к врачу-неврологу.");
+            result.add(human + "\t лишнее обращение к врачу-неврологу.");
         }
     }
 
