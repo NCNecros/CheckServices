@@ -1,9 +1,9 @@
 package company;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 
-import javax.annotation.Resource;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -14,40 +14,132 @@ import java.util.stream.Collectors;
 @org.springframework.stereotype.Service
 @Scope(value = "prototype")
 public class Treatment {
-    public String OSMOTR_GINECOLOGA = "B01.001.019";
-    public String OSMOTR_PEDIATRA = "B01.031.016";
-    public String OSMOTR_UPEDIATRA = "B01.031.016.01";
-    public String OSMOTR_OFTALMOLOGA = "B01.029.015";
-    public String OSMOTR_NEVROLOGA = "B01.023.012";
-    public String OSMOTR_LORA = "B01.028.011";
-    public String OSMOTR_HIRURGA = "B01.057.010";
-    public String OSMOTR_TERAPEVTA = "B01.047.022";
-    public String OSMOTR_UTERAPEVTA = "B01.047.022.01";
-    public String OSMOTR_ENDOCRINOLOG = "B01.058.013";
-    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
-
-    private Treatment treatment;
-
-    @Resource
-    private List<String> ginecologServices;
-    @Resource
-    private List<String> pediatrServices;
-    @Resource
-    private List<String> nevrologServices;
-    @Resource
-    private List<String> lorServices;
-    @Resource
-    private List<String> oftalmologServices;
-    @Resource
-    private List<String> terapevtServices;
-
     Date datn;
     Date dato;
     String mkb = "";
     String doctor;
     Human parent;
     Map<Double, Service> uslugi = new HashMap<>();
+    List<String> result;
+    List<String> services;
 
+    @Value("#{'${ginecolog.services}'.split(',')}")
+    private List<String> ginecologUslugi;
+    @Value("${ginecolog.obrashenie}")
+    private String GINECOLOG_OBRASHENIE;
+    @Value("#{'${ginecolog.deti.services}'.split(',')}")
+    private List<String> ginecologDetiUslugi;
+    @Value("${ginecolog.deti.obrashenie}")
+    private String GINECOLOG_DETI_OBRASHENIE;
+    @Value("#{'${gastroenterolog.uslugi}'.split(',')}")
+    private List<String> gastroenterologUslugi;
+    @Value("${gastroenterolog.obrashenie}")
+    private String GASTROENTEROLOG_OBRASHENIE;
+    @Value("#{'${gastroenterolog.deti.uslugi}'.split(',')}")
+    private List<String> gastroenterologDetiUslugi;
+    @Value("${gastroenterolog.deti.obrashenie}")
+    private String GASTROENTEROLOG_DETI_OBRASHENIE;
+    @Value("#{'${hirurg.deti.uslugi}'.split(',')}")
+    private List<String> hirurgDetiUslugi;
+    @Value("${hirurg.deti.obrashenie}")
+    private String HIRURG_DETI_OBRASHENIE;
+    @Value("#{'${infectionist.uslugi}'.split(',')}")
+    private List<String> infectionistUslugi;
+    @Value("${infectionist.obrashenie}")
+    private String INFECTIONIST_OBRASHENIE;
+    @Value("#{'${infectionist.deti.uslugi}'.split(',')}")
+    private List<String> infectionistDetiUslugi;
+    @Value("${infectionist.deti.obrashenie}")
+    private String INFECTIONIST_DETI_OBRASHENIE;
+    @Value("#{'${cardiolog.uslugi}'.split(',')}")
+    private List<String> cardiologUslugi;
+    @Value("${cardiolog.obrashenie}")
+    private String CARDIOLOG_OBRASHENIE;
+    @Value("#{'${cardiolog.deti.uslugi}'.split(',')}")
+    private List<String> cardiologDetiUslugi;
+    @Value("${cardiolog.deti.obrashenie}")
+    private String CARDIOLOG_DETI_OBRASHENIE;
+    @Value("#{'${coloproctolog.uslugi}'.split(',')}")
+    private List<String> coloproctologUslugi;
+    @Value("${coloproctolog.obrashenie}")
+    private String COLOPROCTOLOG_OBRASHENIE;
+    @Value("#{'${nevrolog.uslugi}'.split(',')}")
+    private List<String> nevrologUslugi;
+    @Value("${nevrolog.obrashenie}")
+    private String NEVROLOG_OBRASHENIE;
+    @Value("#{'${nevrolog.deti.uslugi}'.split(',')}")
+    private List<String> nevrologDetiUslugi;
+    @Value("${nevrolog.deti.obrashenie}")
+    private String NEVROLOG_DETI_OBRASHENIE;
+    @Value("#{'${lor.uslugi}'.split(',')}")
+    private List<String> lorUslugi;
+    @Value("${lor.obrashenie}")
+    private String LOR_OBRASHENIE;
+    @Value("#{'${lor.deti.uslugi}'.split(',')}")
+    private List<String> lorDetiUslugi;
+    @Value("${lor.deti.obrashenie}")
+    private String LOR_DETI_OBRASHENIE;
+    @Value("#{'${oftalmolog.uslugi}'.split(',')}")
+    private List<String> oftalmologUslugi;
+    @Value("${oftalmolog.obrashenie}")
+    private String OFTALMOLOG_OBRASHENIE;
+    @Value("#{'${oftalmolog.deti.uslugi}'.split(',')}")
+    private List<String> oftalmologDetiUslugi;
+    @Value("${oftalmolog.deti.obrashenie}")
+    private String OFTALMOLOG_DETI_OBRASHENIE;
+    @Value("#{'${pediatr.uslugi}'.split(',')}")
+    private List<String> pediatrUslugi;
+    @Value("${pediatr.obrashenie}")
+    private String PEDIATR_OBRASHENIE;
+    @Value("#{'${pediatr.uchastkovyj.uslugi}'.split(',')}")
+    private List<String> pediatrUchastkovyiUslugi;
+    @Value("${pediatr.uchastkovyj.obrashenie}")
+    private String PEDIATR_UCHASTKOVYJ_OBRASHENIE;
+    @Value("#{'${pulmonolog.uslugi}'.split(',')}")
+    private List<String> pulmonologUslugi;
+    @Value("${pulmonolog.obrashenie}")
+    private String PULMONOLOG_OBRASHENIE;
+    @Value("#{'${pulmonolog.deti.uslugi}'.split(',')}")
+    private List<String> pulmonologDetiUslugi;
+    @Value("${pulmonolog.deti.obrashenie}")
+    private String PULMONOLOG_DETI_OBRASHENIE;
+    @Value("#{'${terapevt.uslugi}'.split(',')}")
+    private List<String> terapevtUslugi;
+    @Value("${terapevt.obrashenie}")
+    private String TERAPEVT_OBRASHENIE;
+    @Value("#{'${terapevt.uchastkovyj.uslugi}'.split(',')}")
+    private List<String> terapevtUchastkovyiUslugi;
+    @Value("${terapevt.uchastkovyj.obrashenie}")
+    private String TERAPEVT_UCHASTKOVYJ_OBRASHENIE;
+    @Value("#{'${travmatolog.uslugi}'.split(',')}")
+    private List<String> travmatologUslugi;
+    @Value("${travmatolog.obrashenie}")
+    private String TRAVMATOLOG_OBRASHENIE;
+    @Value("#{'${travmatolog.deti.uslugi}'.split(',')}")
+    private List<String> travmatologDetiUslugi;
+    @Value("${travmatolog.deti.obrashenie}")
+    private String TRAVMATOLOG_DETI_OBRASHENIE;
+    @Value("#{'${urolog.uslugi}'.split(',')}")
+    private List<String> urologUslugi;
+    @Value("${urolog.obrashenie}")
+    private String UROLOG_OBRASHENIE;
+    @Value("#{'${urolog.deti.uslugi}'.split(',')}")
+    private List<String> urologDetiUslugi;
+    @Value("${urolog.deti.obrashenie}")
+    private String UROLOG_DETI_OBRASHENIE;
+    @Value("#{'${hirurg.uslugi}'.split(',')}")
+    private List<String> hirurgUslugi;
+    @Value("${hirurg.obrashenie}")
+    private String HIRURG_OBRASHENIE;
+    @Value("#{'${endocrinolog.uslugi}'.split(',')}")
+    private List<String> endocrinologUslugi;
+    @Value("${endocrinolog.obrashenie}")
+    private String ENDOCRINOLOG_OBRASHENIE;
+    @Value("#{'${endocrinolog.deti.uslugi}'.split(',')}")
+    private List<String> endocrinologDetiUslugi;
+    @Value("${endocrinolog.deti.obrashenie}")
+    private String ENDOCRINOLOG_DETI_OBRASHENIE;
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
 
     public Date getDatn() {
         return datn;
@@ -90,114 +182,214 @@ public class Treatment {
     }
 
     public List<String> checkUslugi() {
-        List<String> result = new ArrayList<>();
-        Human human = getParent();
+        result = new ArrayList<>();
         for (Service service : getUslugi().values()) {
             result.addAll(UslugaChecker.check(service));
         }
 //        checkForServiceDuplicates(result, human);
-        checkForMissedService(result, human);
-
+        checkForMissedService();
         return result;
     }
 
-    private void checkForMissedService(List<String> result, Human human) {
-        List<String> services = getUslugi().values().stream()
+    private void checkForMissedService() {
+        services = getUslugi().values().stream()
                 .map(Service::getKusl)
                 .collect(Collectors.toList());
 
-        //TODO Интересный пример как использовать стрим-апи для наполнения MAP
-        //Map<String, Date> stringDateMap = getUslugi().values().stream()
-        //                  .collect(Collectors.toMap(Service::getKusl, Service::getDatn));
-
-        checkMissedPediatrService(result, human, services);
-        checkMissedGinekologService(result, human, services);
-        checkMissedNevrologService(result, human, services);
-        checkMissedLORService(result, human, services);
-        checkMissedOftalmologService(result, human, services);
-        checkMissedTerapevtService(result, human, services);
-        checkMissedHirurgService(result, human, services);
-        checkMissedEndokrinologService(result, human, services);
-        checkForReduantNevrologService(result, human, services);
-        checkForReduantGinecologService(result, human, services);
-        checkMissedUPediatrService(result, human, services);
-        checkMissedUTerapevtService(result, human, services);
-
+        checkMissedGinecologUslugi();
+        checkForReduantGinecologUsluga();
     }
 
-    private void checkMissedPediatrService(List<String> result, Human human, List<String> services) {
-        if (services.size() > 1 && services.contains("B01.031.014") && !services.contains("B01.031.016")) {
-            result.add(human + "\t" + "("+simpleDateFormat.format(getDatn())+")"+"добавить обращение к врачу-педиатру.");
+    private void addErrorForMissedObrashenie(String doctor) {
+        result.add(toString() + " отсутствует обращение - врач-" + doctor);
+    }
+    private void addErrorForReduantObrashenie(String doctor){
+        result.add(toString() + " лишнее обращение - врач-" + doctor);
+    }
+
+    private void checkForReduantGinecologUsluga() {
+        if (CollectionUtils.containsAny(services, ginecologUslugi) && services.contains(GINECOLOG_OBRASHENIE) && services.size() == 2) {
+            addErrorForReduantObrashenie("акушер-гинеколог");
         }
     }
 
-    private void checkMissedUPediatrService(List<String> result, Human human, List<String> services) {
-        if (services.size() > 1 && (services.contains("B01.031.013") || services.contains("B01.031.006")) && !services.contains("B01.031.016.01")) {
-            result.add(human + "\t" + "("+simpleDateFormat.format(getDatn())+")"+" добавить обращение к врачу-педиатру участковому.");
+    private void checkForReduantNevrologService() {
+        if (CollectionUtils.containsAny(services, nevrologUslugi) && services.contains(NEVROLOG_OBRASHENIE) && services.size() == 2) {
+            addErrorForReduantObrashenie("невролог");
         }
     }
 
-    private void checkMissedGinekologService(List<String> result, Human human, List<String> services) {
-        if (services.size() > 1 && (CollectionUtils.containsAny(services, ginecologServices)) && !services.contains("B01.001.019")) {
-            result.add(human + "\t" +  "("+simpleDateFormat.format(getDatn())+")"+" добавить обращение к врачу-акушеру-гинекологу.");
+    private void checkMissedGinecologUslugi() {
+        if (services.size() > 1 && (CollectionUtils.containsAny(services, ginecologUslugi)) && !services.contains(GINECOLOG_OBRASHENIE)) {
+            addErrorForMissedObrashenie("акушер-гинеколог.");
         }
     }
 
-    private void checkMissedNevrologService(List<String> result, Human human, List<String> services) {
-        if (services.size() > 1 && (services.contains("B01.023.001")
-                || services.contains("B01.023.004")) && !services.contains("B01.023.012")) {
-            result.add(human + "\t" + " добавить обращение к врачу-неврологу.");
+    private void checkMissedGinecologDetiUslugi() {
+        if (services.size() > 1 && (CollectionUtils.containsAny(services, ginecologDetiUslugi)) && !services.contains(GINECOLOG_DETI_OBRASHENIE)) {
+            addErrorForMissedObrashenie("акушер-гинеколог (дети).");
         }
     }
 
-    private void checkMissedLORService(List<String> result, Human human, List<String> services) {
-        if (services.size() > 1 && (services.contains("B01.028.001")) && !services.contains("B01.028.011")) {
-            result.add(human + "\t" + " добавить обращение к врачу-отоларингологу.");
+    private void checkMissedGastroenterologUslugi() {
+        if (services.size() > 1 && (CollectionUtils.containsAny(services, gastroenterologUslugi)) && !services.contains(GASTROENTEROLOG_OBRASHENIE)) {
+            addErrorForMissedObrashenie("гастроэнтеролог.");
         }
     }
 
-    private void checkMissedOftalmologService(List<String> result, Human human, List<String> services) {
-        if (services.size() > 1 && (services.contains("B01.029.001")
-                || services.contains("B01.029.006")) && !services.contains("B01.029.015")) {
-            result.add(human + "\t" + "добавить обращение к врачу-офтальмологу.");
+    private void checkMissedGastroenterologDetiUslugi() {
+        if (services.size() > 1 && (CollectionUtils.containsAny(services, gastroenterologDetiUslugi)) && !services.contains(GASTROENTEROLOG_DETI_OBRASHENIE)) {
+            addErrorForMissedObrashenie("гастроэнтеролог (дети).");
         }
     }
 
-    private void checkMissedHirurgService(List<String> result, Human human, List<String> services) {
-        if (services.size() > 1 && (services.contains("B01.057.007")
-                || services.contains("B01.057.008")) && !services.contains("B01.057.010")) {
-            result.add(human + "\t" + " добавить обращения к врачу-хирургу.");
+    private void checkMissedHirurgDetiUslugi() {
+        if (services.size() > 1 && (CollectionUtils.containsAny(services, hirurgDetiUslugi)) && !services.contains(HIRURG_DETI_OBRASHENIE)) {
+            addErrorForMissedObrashenie("детский-хирург");
         }
     }
 
-    private void checkMissedEndokrinologService(List<String> result, Human human, List<String> services) {
-        if (services.size() > 1 && (services.contains("B01.058.001")
-                || services.contains("B01.058.010")) && !services.contains("B01.058.013")) {
-            result.add(human + "\t" + "("+treatment.getDatn()+")"+" добавить обращение к врачу-эндокринологу.");
+    private void checkMissedInfectionistDetiUslugi() {
+        if (services.size() > 1 && (CollectionUtils.containsAny(services, infectionistDetiUslugi)) && !services.contains(INFECTIONIST_DETI_OBRASHENIE)) {
+            addErrorForMissedObrashenie("инфекционист (дети)");
         }
     }
 
-    private void checkMissedTerapevtService(List<String> result, Human human, List<String> services) {
-        if (services.size() > 1 && services.contains("B01.047.019") && !services.contains("B01.047.022")) {
-            result.add(human + "\t" + " добавить обращение к врачу-терапевту.");
+    private void checkMissedInfectionistUslugi() {
+        if (services.size() > 1 && (CollectionUtils.containsAny(services, infectionistUslugi)) && !services.contains(INFECTIONIST_OBRASHENIE)) {
+            addErrorForMissedObrashenie("инфекционист.");
         }
     }
 
-    private void checkMissedUTerapevtService(List<String> result, Human human, List<String> services) {
-        if (services.size() > 1 && (services.contains("B01.047.014") || services.contains("B01.047.020")) && !services.contains("B01.047.022.01")) {
-            result.add(human + "\t" + " добавить обращение к врачу-терапевту участковому.");
+    private void checkMissedCardiologUslugi() {
+        if (services.size() > 1 && (CollectionUtils.containsAny(services, cardiologUslugi)) && !services.contains(CARDIOLOG_OBRASHENIE)) {
+            addErrorForMissedObrashenie("кардиолог");
         }
     }
 
-    private void checkForReduantGinecologService(List<String> result, Human human, List<String> services){
-        if (CollectionUtils.containsAny(services, ginecologServices) && services.contains(OSMOTR_GINECOLOGA) && services.size() ==2){
-            result.add(human + "\t лишнее обращение к врачу-акушеру-гинекологу.");
+    private void checkMissedCardiologDetiUslugi() {
+        if (services.size() > 1 && (CollectionUtils.containsAny(services, cardiologDetiUslugi)) && !services.contains(CARDIOLOG_DETI_OBRASHENIE)) {
+            addErrorForMissedObrashenie("кардиолог-дети.");
         }
     }
 
-    private void checkForReduantNevrologService(List<String> result, Human human, List<String> services){
-        if (CollectionUtils.containsAny(services, nevrologServices) && services.contains(OSMOTR_NEVROLOGA) && services.size() ==2){
-            result.add(human + "\t лишнее обращение к врачу-неврологу.");
+    private void checkMissedColoproctologUslugi() {
+        if (services.size() > 1 && (CollectionUtils.containsAny(services, coloproctologUslugi)) && !services.contains(COLOPROCTOLOG_OBRASHENIE)) {
+            addErrorForMissedObrashenie("колопроктолог");
+        }
+    }
+
+    private void checkMissedNevrologUslugi() {
+        if (services.size() > 1 && (CollectionUtils.containsAny(services, nevrologUslugi)) && !services.contains(NEVROLOG_OBRASHENIE)) {
+            addErrorForMissedObrashenie("невролог");
+        }
+    }
+
+    private void checkMissedNevrologDetiUslugi() {
+        if (services.size() > 1 && (CollectionUtils.containsAny(services, nevrologDetiUslugi)) && !services.contains(NEVROLOG_DETI_OBRASHENIE)) {
+            addErrorForMissedObrashenie("невролог (дети)");
+        }
+    }
+
+    private void checkMissedLorUslugi() {
+        if (services.size() > 1 && (CollectionUtils.containsAny(services, lorUslugi)) && !services.contains(LOR_OBRASHENIE)) {
+            addErrorForMissedObrashenie("отоларинголог");
+        }
+    }
+
+    private void checkMissedLorDetiUslugi() {
+        if (services.size() > 1 && (CollectionUtils.containsAny(services, lorDetiUslugi)) && !services.contains(LOR_DETI_OBRASHENIE)) {
+            addErrorForMissedObrashenie("отоларинголог (дети)");
+        }
+    }
+
+    private void checkMissedOftalmologUslugi() {
+        if (services.size() > 1 && (CollectionUtils.containsAny(services, oftalmologUslugi)) && !services.contains(OFTALMOLOG_OBRASHENIE)) {
+            addErrorForMissedObrashenie("офтальмолог");
+        }
+    }
+
+    private void checkMissedOftalmologDetiUslugi() {
+        if (services.size() > 1 && (CollectionUtils.containsAny(services, oftalmologDetiUslugi)) && !services.contains(OFTALMOLOG_DETI_OBRASHENIE)) {
+            addErrorForMissedObrashenie("офтальмолог (дети)");
+        }
+    }
+
+    private void checkMissedPediatrUslugi() {
+        if (services.size() > 1 && (CollectionUtils.containsAny(services, pediatrUslugi)) && !services.contains(PEDIATR_OBRASHENIE)) {
+            addErrorForMissedObrashenie("педиатр");
+        }
+    }
+
+    private void checkMissedPediatrUchastkovyiUslugi() {
+        if (services.size() > 1 && (CollectionUtils.containsAny(services, pediatrUchastkovyiUslugi)) && !services.contains(PEDIATR_UCHASTKOVYJ_OBRASHENIE)) {
+            addErrorForMissedObrashenie("педиатр-участковый");
+        }
+    }
+
+    private void checkMissedPulmonologUslugi() {
+        if (services.size() > 1 && (CollectionUtils.containsAny(services, pulmonologUslugi)) && !services.contains(PULMONOLOG_OBRASHENIE)) {
+            addErrorForMissedObrashenie("пульмонолог");
+        }
+    }
+
+    private void checkMissedPulmonologDetiUslugi() {
+        if (services.size() > 1 && (CollectionUtils.containsAny(services, pulmonologDetiUslugi)) && !services.contains(PULMONOLOG_DETI_OBRASHENIE)) {
+            addErrorForMissedObrashenie("пульмонолог (дети)");
+        }
+    }
+
+    private void checkMissedTerapevtUslugi() {
+        if (services.size() > 1 && (CollectionUtils.containsAny(services, terapevtUslugi)) && !services.contains(TERAPEVT_OBRASHENIE)) {
+            addErrorForMissedObrashenie("тераевт");
+        }
+    }
+
+    private void checkMissedTerapevtUchastkovyiUslugi() {
+        if (services.size() > 1 && (CollectionUtils.containsAny(services, terapevtUchastkovyiUslugi)) && !services.contains(TERAPEVT_UCHASTKOVYJ_OBRASHENIE)) {
+            addErrorForMissedObrashenie("терапевт-участковый");
+        }
+    }
+
+    private void checkMissedTravmatologUslugi() {
+        if (services.size() > 1 && (CollectionUtils.containsAny(services, travmatologUslugi)) && !services.contains(TRAVMATOLOG_OBRASHENIE)) {
+            addErrorForMissedObrashenie("травматолог");
+        }
+    }
+
+    private void checkMissedTravmatologDetiUslugi() {
+        if (services.size() > 1 && (CollectionUtils.containsAny(services, travmatologDetiUslugi)) && !services.contains(TRAVMATOLOG_DETI_OBRASHENIE)) {
+            addErrorForMissedObrashenie("травматолог (дети)");
+        }
+    }
+
+    private void checkMissedUrologUslugi() {
+        if (services.size() > 1 && (CollectionUtils.containsAny(services, urologUslugi)) && !services.contains(UROLOG_OBRASHENIE)) {
+            addErrorForMissedObrashenie("уролог");
+        }
+    }
+
+    private void checkMissedUrologDetiUslugi() {
+        if (services.size() > 1 && (CollectionUtils.containsAny(services, urologDetiUslugi)) && !services.contains(UROLOG_DETI_OBRASHENIE)) {
+            addErrorForMissedObrashenie("уролог (дети)");
+        }
+    }
+
+    private void checkMissedHirugrUslugi() {
+        if (services.size() > 1 && (CollectionUtils.containsAny(services, hirurgUslugi)) && !services.contains(HIRURG_OBRASHENIE)) {
+            addErrorForMissedObrashenie("хирург");
+        }
+    }
+
+    private void checkMissedEndocrinologUslugi() {
+        if (services.size() > 1 && (CollectionUtils.containsAny(services, endocrinologUslugi)) && !services.contains(ENDOCRINOLOG_OBRASHENIE)) {
+            addErrorForMissedObrashenie("эндокринолог");
+        }
+    }
+
+    private void checkMissedEndocrinologDetiUslugi() {
+        if (services.size() > 1 && (CollectionUtils.containsAny(services, endocrinologDetiUslugi)) && !services.contains(ENDOCRINOLOG_DETI_OBRASHENIE)) {
+            addErrorForMissedObrashenie("эндокринолог");
         }
     }
 
@@ -207,19 +399,17 @@ public class Treatment {
             servicesWithOutCurrent.remove(service);
             result.addAll(servicesWithOutCurrent.stream()
                     .filter(service::isDuplicates)
-                    .map(otherService -> human + "\t" + "содержит дублирующуюся услугу")
+                    .map(otherService -> toString()+ " дублирование услуги")
                     .collect(Collectors.toList()));
         }
     }
 
     @Override
-    public String toString(){
-        String result="";
-        for (Service service : uslugi.values()){
-            result = result + "{"+service.getKusl()+"}";
-        }
-        return result;
+    public String toString() {
+        return parent + "\t"
+                + "(" + simpleDateFormat.format(getDatn()) + ")";
     }
+
     public Map<Double, Service> getUslugi() {
         return uslugi;
     }
