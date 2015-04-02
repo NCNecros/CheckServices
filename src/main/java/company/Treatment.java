@@ -4,6 +4,9 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Scope;
 
+import javax.annotation.PostConstruct;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -11,8 +14,9 @@ import java.util.stream.Collectors;
 /**
  * Created by Necros on 19.03.2015.
  */
-@org.springframework.stereotype.Service
+@org.springframework.stereotype.Service()
 @Scope(value = "prototype")
+
 public class Treatment {
     Date datn;
     Date dato;
@@ -139,7 +143,74 @@ public class Treatment {
     private List<String> endocrinologDetiUslugi;
     @Value("${endocrinolog.deti.obrashenie}")
     private String ENDOCRINOLOG_DETI_OBRASHENIE;
+
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+
+    private Map<List<String>, String> uslugiAndObrahsenie = new HashMap<>();
+    private Map<String, String> obrahsenieAndDoctor= new HashMap<>();
+
+    @PostConstruct
+    public void init() {
+        uslugiAndObrahsenie.put(ginecologUslugi,            GINECOLOG_OBRASHENIE);
+        uslugiAndObrahsenie.put(ginecologDetiUslugi,        GINECOLOG_DETI_OBRASHENIE);
+        uslugiAndObrahsenie.put(gastroenterologUslugi,      GASTROENTEROLOG_OBRASHENIE);
+        uslugiAndObrahsenie.put(gastroenterologDetiUslugi,  GASTROENTEROLOG_DETI_OBRASHENIE);
+        uslugiAndObrahsenie.put(hirurgDetiUslugi,           HIRURG_DETI_OBRASHENIE);
+        uslugiAndObrahsenie.put(infectionistUslugi,         INFECTIONIST_OBRASHENIE);
+        uslugiAndObrahsenie.put(infectionistDetiUslugi,     INFECTIONIST_DETI_OBRASHENIE);
+        uslugiAndObrahsenie.put(cardiologUslugi,            CARDIOLOG_OBRASHENIE);
+        uslugiAndObrahsenie.put(cardiologDetiUslugi,        CARDIOLOG_DETI_OBRASHENIE);
+        uslugiAndObrahsenie.put(coloproctologUslugi,        COLOPROCTOLOG_OBRASHENIE);
+        uslugiAndObrahsenie.put(nevrologUslugi,             NEVROLOG_OBRASHENIE);
+        uslugiAndObrahsenie.put(nevrologDetiUslugi,         NEVROLOG_DETI_OBRASHENIE);
+        uslugiAndObrahsenie.put(lorUslugi,                  LOR_OBRASHENIE);
+        uslugiAndObrahsenie.put(lorDetiUslugi,              LOR_DETI_OBRASHENIE);
+        uslugiAndObrahsenie.put(oftalmologUslugi,           OFTALMOLOG_OBRASHENIE);
+        uslugiAndObrahsenie.put(oftalmologDetiUslugi,       OFTALMOLOG_DETI_OBRASHENIE);
+        uslugiAndObrahsenie.put(pediatrUslugi,              PEDIATR_OBRASHENIE);
+        uslugiAndObrahsenie.put(pediatrUchastkovyiUslugi,   PEDIATR_UCHASTKOVYJ_OBRASHENIE);
+        uslugiAndObrahsenie.put(pulmonologUslugi,           PULMONOLOG_OBRASHENIE);
+        uslugiAndObrahsenie.put(pulmonologDetiUslugi,       PULMONOLOG_DETI_OBRASHENIE);
+        uslugiAndObrahsenie.put(terapevtUslugi,             TERAPEVT_OBRASHENIE);
+        uslugiAndObrahsenie.put(terapevtUchastkovyiUslugi,  TERAPEVT_UCHASTKOVYJ_OBRASHENIE);
+        uslugiAndObrahsenie.put(travmatologUslugi,          TRAVMATOLOG_OBRASHENIE);
+        uslugiAndObrahsenie.put(travmatologDetiUslugi,      TRAVMATOLOG_DETI_OBRASHENIE);
+        uslugiAndObrahsenie.put(urologUslugi,               UROLOG_OBRASHENIE);
+        uslugiAndObrahsenie.put(urologDetiUslugi,           UROLOG_DETI_OBRASHENIE);
+        uslugiAndObrahsenie.put(hirurgUslugi,               HIRURG_OBRASHENIE);
+        uslugiAndObrahsenie.put(endocrinologUslugi,         ENDOCRINOLOG_OBRASHENIE);
+        uslugiAndObrahsenie.put(endocrinologDetiUslugi,     ENDOCRINOLOG_DETI_OBRASHENIE);
+
+        obrahsenieAndDoctor.put(GINECOLOG_OBRASHENIE, "акушер-гинеколог");
+        obrahsenieAndDoctor.put(GINECOLOG_DETI_OBRASHENIE, "акушер-гинеколог(дети)");
+        obrahsenieAndDoctor.put(GASTROENTEROLOG_OBRASHENIE, "гастроэнтеролог");
+        obrahsenieAndDoctor.put(GASTROENTEROLOG_DETI_OBRASHENIE, "гастроэнтеролог (дети)");
+        obrahsenieAndDoctor.put(HIRURG_DETI_OBRASHENIE, "");
+        obrahsenieAndDoctor.put(INFECTIONIST_OBRASHENIE, "");
+        obrahsenieAndDoctor.put(INFECTIONIST_DETI_OBRASHENIE, "");
+        obrahsenieAndDoctor.put(CARDIOLOG_OBRASHENIE, "");
+        obrahsenieAndDoctor.put(CARDIOLOG_DETI_OBRASHENIE, "");
+        obrahsenieAndDoctor.put(COLOPROCTOLOG_OBRASHENIE, "");
+        obrahsenieAndDoctor.put(NEVROLOG_OBRASHENIE, "");
+        obrahsenieAndDoctor.put(NEVROLOG_DETI_OBRASHENIE, "");
+        obrahsenieAndDoctor.put(LOR_OBRASHENIE, "");
+        obrahsenieAndDoctor.put(LOR_DETI_OBRASHENIE, "");
+        obrahsenieAndDoctor.put(OFTALMOLOG_OBRASHENIE, "");
+        obrahsenieAndDoctor.put(OFTALMOLOG_DETI_OBRASHENIE, "");
+        obrahsenieAndDoctor.put(PEDIATR_OBRASHENIE, "");
+        obrahsenieAndDoctor.put(PEDIATR_UCHASTKOVYJ_OBRASHENIE, "");
+        obrahsenieAndDoctor.put(PULMONOLOG_OBRASHENIE, "");
+        obrahsenieAndDoctor.put(PULMONOLOG_DETI_OBRASHENIE, "");
+        obrahsenieAndDoctor.put(TERAPEVT_OBRASHENIE, "");
+        obrahsenieAndDoctor.put(TERAPEVT_UCHASTKOVYJ_OBRASHENIE, "");
+        obrahsenieAndDoctor.put(TRAVMATOLOG_OBRASHENIE, "");
+        obrahsenieAndDoctor.put(TRAVMATOLOG_DETI_OBRASHENIE, "");
+        obrahsenieAndDoctor.put(UROLOG_OBRASHENIE, "");
+        obrahsenieAndDoctor.put(UROLOG_DETI_OBRASHENIE, "");
+        obrahsenieAndDoctor.put(HIRURG_OBRASHENIE, "");
+        obrahsenieAndDoctor.put(ENDOCRINOLOG_OBRASHENIE, "");
+        obrahsenieAndDoctor.put(ENDOCRINOLOG_DETI_OBRASHENIE, "");
+    }
 
     public Date getDatn() {
         return datn;
@@ -188,6 +259,7 @@ public class Treatment {
         }
 //        checkForServiceDuplicates(result, human);
         checkForMissedService();
+        checkForReduantGinecologUsluga();
         return result;
     }
 
@@ -196,8 +268,15 @@ public class Treatment {
                 .map(Service::getKusl)
                 .collect(Collectors.toList());
 
-        checkMissedGinecologUslugi();
-        checkForReduantGinecologUsluga();
+        for (Map.Entry<List<String>, String> entry : uslugiAndObrahsenie.entrySet()){
+            checkMissedUslugi(entry.getKey(), entry.getValue(), obrahsenieAndDoctor.get(entry.getValue()));
+        }
+    }
+
+    private void checkMissedUslugi(List<String> uslugi, String obrashenie, String doctor) {
+        if (services.size() > 1 && (CollectionUtils.containsAny(services, uslugi)) && !services.contains(obrashenie)) {
+            addErrorForMissedObrashenie(doctor);
+        }
     }
 
     private void addErrorForMissedObrashenie(String doctor) {
@@ -216,180 +295,6 @@ public class Treatment {
     private void checkForReduantNevrologService() {
         if (CollectionUtils.containsAny(services, nevrologUslugi) && services.contains(NEVROLOG_OBRASHENIE) && services.size() == 2) {
             addErrorForReduantObrashenie("невролог");
-        }
-    }
-
-    private void checkMissedGinecologUslugi() {
-        if (services.size() > 1 && (CollectionUtils.containsAny(services, ginecologUslugi)) && !services.contains(GINECOLOG_OBRASHENIE)) {
-            addErrorForMissedObrashenie("акушер-гинеколог.");
-        }
-    }
-
-    private void checkMissedGinecologDetiUslugi() {
-        if (services.size() > 1 && (CollectionUtils.containsAny(services, ginecologDetiUslugi)) && !services.contains(GINECOLOG_DETI_OBRASHENIE)) {
-            addErrorForMissedObrashenie("акушер-гинеколог (дети).");
-        }
-    }
-
-    private void checkMissedGastroenterologUslugi() {
-        if (services.size() > 1 && (CollectionUtils.containsAny(services, gastroenterologUslugi)) && !services.contains(GASTROENTEROLOG_OBRASHENIE)) {
-            addErrorForMissedObrashenie("гастроэнтеролог.");
-        }
-    }
-
-    private void checkMissedGastroenterologDetiUslugi() {
-        if (services.size() > 1 && (CollectionUtils.containsAny(services, gastroenterologDetiUslugi)) && !services.contains(GASTROENTEROLOG_DETI_OBRASHENIE)) {
-            addErrorForMissedObrashenie("гастроэнтеролог (дети).");
-        }
-    }
-
-    private void checkMissedHirurgDetiUslugi() {
-        if (services.size() > 1 && (CollectionUtils.containsAny(services, hirurgDetiUslugi)) && !services.contains(HIRURG_DETI_OBRASHENIE)) {
-            addErrorForMissedObrashenie("детский-хирург");
-        }
-    }
-
-    private void checkMissedInfectionistDetiUslugi() {
-        if (services.size() > 1 && (CollectionUtils.containsAny(services, infectionistDetiUslugi)) && !services.contains(INFECTIONIST_DETI_OBRASHENIE)) {
-            addErrorForMissedObrashenie("инфекционист (дети)");
-        }
-    }
-
-    private void checkMissedInfectionistUslugi() {
-        if (services.size() > 1 && (CollectionUtils.containsAny(services, infectionistUslugi)) && !services.contains(INFECTIONIST_OBRASHENIE)) {
-            addErrorForMissedObrashenie("инфекционист.");
-        }
-    }
-
-    private void checkMissedCardiologUslugi() {
-        if (services.size() > 1 && (CollectionUtils.containsAny(services, cardiologUslugi)) && !services.contains(CARDIOLOG_OBRASHENIE)) {
-            addErrorForMissedObrashenie("кардиолог");
-        }
-    }
-
-    private void checkMissedCardiologDetiUslugi() {
-        if (services.size() > 1 && (CollectionUtils.containsAny(services, cardiologDetiUslugi)) && !services.contains(CARDIOLOG_DETI_OBRASHENIE)) {
-            addErrorForMissedObrashenie("кардиолог-дети.");
-        }
-    }
-
-    private void checkMissedColoproctologUslugi() {
-        if (services.size() > 1 && (CollectionUtils.containsAny(services, coloproctologUslugi)) && !services.contains(COLOPROCTOLOG_OBRASHENIE)) {
-            addErrorForMissedObrashenie("колопроктолог");
-        }
-    }
-
-    private void checkMissedNevrologUslugi() {
-        if (services.size() > 1 && (CollectionUtils.containsAny(services, nevrologUslugi)) && !services.contains(NEVROLOG_OBRASHENIE)) {
-            addErrorForMissedObrashenie("невролог");
-        }
-    }
-
-    private void checkMissedNevrologDetiUslugi() {
-        if (services.size() > 1 && (CollectionUtils.containsAny(services, nevrologDetiUslugi)) && !services.contains(NEVROLOG_DETI_OBRASHENIE)) {
-            addErrorForMissedObrashenie("невролог (дети)");
-        }
-    }
-
-    private void checkMissedLorUslugi() {
-        if (services.size() > 1 && (CollectionUtils.containsAny(services, lorUslugi)) && !services.contains(LOR_OBRASHENIE)) {
-            addErrorForMissedObrashenie("отоларинголог");
-        }
-    }
-
-    private void checkMissedLorDetiUslugi() {
-        if (services.size() > 1 && (CollectionUtils.containsAny(services, lorDetiUslugi)) && !services.contains(LOR_DETI_OBRASHENIE)) {
-            addErrorForMissedObrashenie("отоларинголог (дети)");
-        }
-    }
-
-    private void checkMissedOftalmologUslugi() {
-        if (services.size() > 1 && (CollectionUtils.containsAny(services, oftalmologUslugi)) && !services.contains(OFTALMOLOG_OBRASHENIE)) {
-            addErrorForMissedObrashenie("офтальмолог");
-        }
-    }
-
-    private void checkMissedOftalmologDetiUslugi() {
-        if (services.size() > 1 && (CollectionUtils.containsAny(services, oftalmologDetiUslugi)) && !services.contains(OFTALMOLOG_DETI_OBRASHENIE)) {
-            addErrorForMissedObrashenie("офтальмолог (дети)");
-        }
-    }
-
-    private void checkMissedPediatrUslugi() {
-        if (services.size() > 1 && (CollectionUtils.containsAny(services, pediatrUslugi)) && !services.contains(PEDIATR_OBRASHENIE)) {
-            addErrorForMissedObrashenie("педиатр");
-        }
-    }
-
-    private void checkMissedPediatrUchastkovyiUslugi() {
-        if (services.size() > 1 && (CollectionUtils.containsAny(services, pediatrUchastkovyiUslugi)) && !services.contains(PEDIATR_UCHASTKOVYJ_OBRASHENIE)) {
-            addErrorForMissedObrashenie("педиатр-участковый");
-        }
-    }
-
-    private void checkMissedPulmonologUslugi() {
-        if (services.size() > 1 && (CollectionUtils.containsAny(services, pulmonologUslugi)) && !services.contains(PULMONOLOG_OBRASHENIE)) {
-            addErrorForMissedObrashenie("пульмонолог");
-        }
-    }
-
-    private void checkMissedPulmonologDetiUslugi() {
-        if (services.size() > 1 && (CollectionUtils.containsAny(services, pulmonologDetiUslugi)) && !services.contains(PULMONOLOG_DETI_OBRASHENIE)) {
-            addErrorForMissedObrashenie("пульмонолог (дети)");
-        }
-    }
-
-    private void checkMissedTerapevtUslugi() {
-        if (services.size() > 1 && (CollectionUtils.containsAny(services, terapevtUslugi)) && !services.contains(TERAPEVT_OBRASHENIE)) {
-            addErrorForMissedObrashenie("тераевт");
-        }
-    }
-
-    private void checkMissedTerapevtUchastkovyiUslugi() {
-        if (services.size() > 1 && (CollectionUtils.containsAny(services, terapevtUchastkovyiUslugi)) && !services.contains(TERAPEVT_UCHASTKOVYJ_OBRASHENIE)) {
-            addErrorForMissedObrashenie("терапевт-участковый");
-        }
-    }
-
-    private void checkMissedTravmatologUslugi() {
-        if (services.size() > 1 && (CollectionUtils.containsAny(services, travmatologUslugi)) && !services.contains(TRAVMATOLOG_OBRASHENIE)) {
-            addErrorForMissedObrashenie("травматолог");
-        }
-    }
-
-    private void checkMissedTravmatologDetiUslugi() {
-        if (services.size() > 1 && (CollectionUtils.containsAny(services, travmatologDetiUslugi)) && !services.contains(TRAVMATOLOG_DETI_OBRASHENIE)) {
-            addErrorForMissedObrashenie("травматолог (дети)");
-        }
-    }
-
-    private void checkMissedUrologUslugi() {
-        if (services.size() > 1 && (CollectionUtils.containsAny(services, urologUslugi)) && !services.contains(UROLOG_OBRASHENIE)) {
-            addErrorForMissedObrashenie("уролог");
-        }
-    }
-
-    private void checkMissedUrologDetiUslugi() {
-        if (services.size() > 1 && (CollectionUtils.containsAny(services, urologDetiUslugi)) && !services.contains(UROLOG_DETI_OBRASHENIE)) {
-            addErrorForMissedObrashenie("уролог (дети)");
-        }
-    }
-
-    private void checkMissedHirugrUslugi() {
-        if (services.size() > 1 && (CollectionUtils.containsAny(services, hirurgUslugi)) && !services.contains(HIRURG_OBRASHENIE)) {
-            addErrorForMissedObrashenie("хирург");
-        }
-    }
-
-    private void checkMissedEndocrinologUslugi() {
-        if (services.size() > 1 && (CollectionUtils.containsAny(services, endocrinologUslugi)) && !services.contains(ENDOCRINOLOG_OBRASHENIE)) {
-            addErrorForMissedObrashenie("эндокринолог");
-        }
-    }
-
-    private void checkMissedEndocrinologDetiUslugi() {
-        if (services.size() > 1 && (CollectionUtils.containsAny(services, endocrinologDetiUslugi)) && !services.contains(ENDOCRINOLOG_DETI_OBRASHENIE)) {
-            addErrorForMissedObrashenie("эндокринолог");
         }
     }
 

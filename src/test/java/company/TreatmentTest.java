@@ -54,7 +54,7 @@ public class TreatmentTest extends AbstractTestNGSpringContextTests {
         treatment.setDato(dateFormat.parse("02.01.2015"));
         List<String> strings = treatment.checkUslugi();
         assertEquals(strings.size(), 1, treatment.toString());
-        assertEquals(strings.get(0), "1111\tИванов Иван Иванович\t01.01.2015\t(01.01.2015) отсутствует обращение - врач-акушер-гинеколог.");
+        assertEquals(strings.get(0), "1111\tИванов Иван Иванович\t01.01.2015\t(01.01.2015) отсутствует обращение - врач-акушер-гинеколог");
 
     }
 
