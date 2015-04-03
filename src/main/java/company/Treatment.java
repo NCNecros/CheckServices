@@ -129,13 +129,13 @@ public class Treatment {
     }
 
     private void checkForServiceDuplicates() {
-        for (Service service : getUslugi().values()) {
-            List<Service> servicesWithOutCurrent = new ArrayList<>(getUslugi().values());
-            servicesWithOutCurrent.remove(service);
-            result.addAll(servicesWithOutCurrent.stream()
-                    .filter(service::isDuplicates)
-                    .map(otherService -> toString() + " дублирование услуги")
-                    .collect(Collectors.toList()));
+        List<Service> allServices = new ArrayList<>(getUslugi().values());
+        List<Service> servicesWithOutDuplicates = allServices.stream()
+                .filter(e -> Collections.frequency(allServices, e) == 1)
+                .collect(Collectors.toList());
+
+        if (allServices.size() != servicesWithOutDuplicates.size()){
+            result.add(toString() + " содержит дубликаты услуг");
         }
     }
 

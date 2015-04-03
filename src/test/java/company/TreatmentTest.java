@@ -7,9 +7,12 @@ import org.testng.annotations.Test;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import static org.testng.Assert.assertEquals;
+import static org.testng.Assert.assertTrue;
 
 @Test
 @ContextConfiguration(classes = AppConfig.class)
@@ -223,6 +226,43 @@ public class TreatmentTest extends AbstractTestNGSpringContextTests {
         List<String> strings = treatment.checkUslugi();
         assertEquals(strings.size(), 1);
         assertEquals(strings.get(0), "1111\tИванов Иван Иванович\t01.01.2015\t(01.01.2015) лишнее обращение - врач-невролог");
+    }
+    @Test
+    public void TestForServiceDuplicates() throws ParseException {
+        treatment.getUslugi().put(1d, new Service("B01.023.010",
+                dateFormat.parse("01.01.2015"),
+                dateFormat.parse("01.01.2015"),
+                treatment));
+
+        treatment.getUslugi().put(2d, new Service("B01.023.010",
+                dateFormat.parse("01.01.2015"),
+                dateFormat.parse("01.01.2015"),
+                treatment));
+
+        treatment.setDatn(dateFormat.parse("01.01.2015"));
+        treatment.setDato(dateFormat.parse("01.01.2015"));
+        List<String> strings = treatment.checkUslugi();
+        assertTrue(strings.contains("1111\tИванов Иван Иванович\t01.01.2015\t(01.01.2015) содержит дубликаты услуг"));
+    }
+
+    @Test
+    public void TestEquality() throws ParseException {
+        Service service1 = new Service("B01.023.010",
+                dateFormat.parse("01.01.2015"),
+                dateFormat.parse("01.01.2015"),
+                treatment);
+
+        Service service2 = new Service("B01.023.010",
+                dateFormat.parse("01.01.2015"),
+                dateFormat.parse("01.01.2015"),
+                treatment);
+
+        List<Service> services = new ArrayList<>();
+        services.add(service1);
+        services.add(service2);
+
+        assertEquals(Collections.frequency(services, service1), 2);
+        assertEquals(service1, service2);
     }
 
 }

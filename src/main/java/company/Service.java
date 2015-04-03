@@ -17,7 +17,7 @@ public class Service {
         this.parent = parent;
         this.dato = dato;
     }
-    public Service(){};
+    public Service(){}
 
     public Treatment getParent() {
         return parent;
@@ -51,8 +51,9 @@ public class Service {
         this.kusl = kusl;
     }
 
-    public Boolean isDuplicates(Service otherService) {
-        return getDatn().equals(otherService.getDatn())
-                && getKusl().equalsIgnoreCase(otherService.getKusl());
+    @Override
+    public boolean equals(Object obj) {
+        Service otheService = (Service) obj;
+        return getDatn().equals(otheService.getDatn()) && getKusl().equalsIgnoreCase(otheService.getKusl());
     }
 }
