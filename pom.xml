@@ -126,10 +126,18 @@
           </reportSet>
         </reportSets>
       </plugin>
+      <!--<plugin>-->
+        <!--<groupId>org.apache.maven.plugins</groupId>-->
+        <!--<artifactId>maven-release-plugin</artifactId>-->
+        <!--<version>2.5.1</version>-->
+        <!--<configuration>-->
+          <!--<tagNameFormat>v@{project.version}</tagNameFormat>-->
+        <!--</configuration>-->
+      <!--</plugin>-->
       <plugin>
         <groupId>org.pitest</groupId>
         <artifactId>pitest-maven</artifactId>
-        <version>LATEST</version>
+        <version>1.1.4</version>
         <configuration>
           <targetClasses><param>company.*</param></targetClasses>
           <targetTests><param>company.*</param></targetTests>
@@ -137,4 +145,10 @@
       </plugin>
     </plugins>
   </reporting>
+
+  <scm>
+    <connection>scm:git:git@github.com:NCNecros/CheckServices.git</connection>
+    <tag>CheckServices-0.3</tag>
+  </scm>
+
 </project>

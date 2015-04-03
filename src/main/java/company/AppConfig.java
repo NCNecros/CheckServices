@@ -1,6 +1,5 @@
 package company;
 
-import com.esotericsoftware.yamlbeans.YamlWriter;
 import org.simpleframework.xml.Serializer;
 import org.simpleframework.xml.core.Persister;
 import org.springframework.context.annotation.Bean;
@@ -9,7 +8,6 @@ import org.springframework.context.annotation.Configuration;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -18,40 +16,11 @@ import java.util.List;
 @Configuration
 @ComponentScan(basePackages = "company")
 public class AppConfig {
-
-
     @Bean
-    public String xmlUslugi() throws Exception {
-        YamlWriter writer = new YamlWriter(new FileWriter("output.yml"));
-        writer.getConfig().setClassTag("vrachebnieuslugi", VrachebnieUslugi.class);
-        List<VrachebnieUslugi> vrachebnieUslugiList = new ArrayList<>();
-        VrachebnieUslugi usluga = new VrachebnieUslugi();
-        usluga.setUslugi(Arrays.asList("B01", "B02", "B03"));
-        usluga.setDoctor("asfas");
-        usluga.setObrashenie("VVVV");
-        vrachebnieUslugiList.add(usluga);
-        usluga = new VrachebnieUslugi();
-        usluga.setUslugi(Arrays.asList("B01", "B02", "B03"));
-        usluga.setDoctor("asfas");
-        usluga.setObrashenie("VVVV");
-        vrachebnieUslugiList.add(usluga);
-        usluga = new VrachebnieUslugi();
-        usluga.setUslugi(Arrays.asList("B01", "B02", "B03"));
-        usluga.setDoctor("asfas");
-        usluga.setObrashenie("VVVV");
-        vrachebnieUslugiList.add(usluga);
-        usluga = new VrachebnieUslugi();
-        usluga.setUslugi(Arrays.asList("B01", "B02", "B03"));
-        usluga.setDoctor("asfas");
-        usluga.setObrashenie("VVVV");
-        vrachebnieUslugiList.add(usluga);
-        usluga = new VrachebnieUslugi();
-        usluga.setUslugi(Arrays.asList("B01", "B02", "B03"));
-        usluga.setDoctor("asfas");
-        usluga.setObrashenie("VVVV");
-        vrachebnieUslugiList.add(usluga);
-        writer.write(vrachebnieUslugiList);
-        writer.close();
-        return "";
+    public Uslugi307List uslugi307() throws Exception {
+        Reader reader = new FileReader(getClass().getClassLoader().getResource("Uslugi307.xml").getFile());
+        Serializer serializer = new Persister();
+        Uslugi307List uslugi307List = serializer.read(Uslugi307List.class, reader);
+        return uslugi307List;
     }
 }

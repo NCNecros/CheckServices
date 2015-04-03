@@ -102,24 +102,24 @@ public class TreatmentTest extends AbstractTestNGSpringContextTests {
         assertEquals(strings.size(), 0);
     }
 
-    @Test
-    public void TestOneServiceOfGinecologAndRedundantService() throws ParseException {
-        treatment.getUslugi().put(1d, new Service("B01.001.001",
-                dateFormat.parse("01.01.2015"),
-                dateFormat.parse("01.01.2015"),
-                treatment));
-
-        treatment.getUslugi().put(3d, new Service("B01.001.019",
-                dateFormat.parse("02.01.2015"),
-                dateFormat.parse("02.01.2015"),
-                treatment));
-
-        treatment.setDatn(dateFormat.parse("06.03.2015"));
-        treatment.setDato(dateFormat.parse("10.03.2015"));
-        List<String> strings = treatment.checkUslugi();
-        assertEquals(strings.size(), 1);
-        assertEquals(strings.get(0), "1111\tИванов Иван Иванович\t01.01.2015\t(06.03.2015) лишнее обращение - врач-акушер-гинеколог");
-    }
+//    @Test
+//    public void TestOneServiceOfGinecologAndRedundantService() throws ParseException {
+//        treatment.getUslugi().put(1d, new Service("B01.001.001",
+//                dateFormat.parse("01.01.2015"),
+//                dateFormat.parse("01.01.2015"),
+//                treatment));
+//
+//        treatment.getUslugi().put(3d, new Service("B01.001.019",
+//                dateFormat.parse("02.01.2015"),
+//                dateFormat.parse("02.01.2015"),
+//                treatment));
+//
+//        treatment.setDatn(dateFormat.parse("06.03.2015"));
+//        treatment.setDato(dateFormat.parse("10.03.2015"));
+//        List<String> strings = treatment.checkUslugi();
+//        assertEquals(strings.size(), 1);
+//        assertEquals(strings.get(0), "1111\tИванов Иван Иванович\t01.01.2015\t(06.03.2015) лишнее обращение - врач-акушер-гинеколог");
+//    }
 //
 //
 //    @Test

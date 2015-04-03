@@ -1,15 +1,19 @@
 package company;
 
-import org.simpleframework.xml.*;
+import org.simpleframework.xml.Default;
+import org.simpleframework.xml.ElementList;
 
 import java.util.List;
 
 /**
  * Created by necros on 02.04.15.
  */
-public class VrachebnieUslugi {
+@Default
+public class Uslugi307 {
+    @ElementList(type = String.class)
     private List<String> uslugi;
     private String obrashenie;
+    private String doctor;
 
     public List<String> getUslugi() {
         return uslugi;
@@ -34,7 +38,5 @@ public class VrachebnieUslugi {
     public void setDoctor(String doctor) {
         this.doctor = doctor;
     }
-
-    private String doctor;
 
 }
