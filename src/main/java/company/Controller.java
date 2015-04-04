@@ -12,7 +12,9 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.springframework.stereotype.*;
 
+import javax.annotation.PostConstruct;
 import java.io.*;
+import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -22,16 +24,15 @@ import java.util.stream.Collectors;
  * Created by Necros on 23.03.2015.
  */
 @org.springframework.stereotype.Service
-public class Controller {
-    String dir = "d:/";
+public class Controller{
+    String dir;
     @FXML
     private TextArea textArea;
 
     @FXML
     public void selectFile(ActionEvent actionEvent) throws IOException, ZipException {
-
         FileChooser fileChooser = new FileChooser();
-        fileChooser.setInitialDirectory(new File(dir));
+//        fileChooser.setInitialDirectory(new File(dir));
         fileChooser.setTitle("Выберите файл счета");
         File file = fileChooser.showOpenDialog(null);
         if (file != null) {
@@ -42,7 +43,7 @@ public class Controller {
     @FXML
     public void selectDir(ActionEvent actionEvent) throws IOException, ZipException {
         DirectoryChooser directoryChooser = new DirectoryChooser();
-        directoryChooser.setInitialDirectory(new File(dir));
+//        directoryChooser.setInitialDirectory(new File(dir));
         directoryChooser.setTitle("Выберите каталог с файлами");
         File file = directoryChooser.showDialog(null);
         List<File> files = Files.list(file.toPath())
@@ -101,7 +102,7 @@ public class Controller {
         pw.close();
     }
 
-    private void saveErrorsToExcel(List<String> errors, String filename) throws IOException {
+    private void saveErrorsToExcel(List<String> errors, String filename){
         Workbook wb = new HSSFWorkbook();
         Sheet sheet = wb.createSheet("Ошибки");
         sheet.getPrintSetup().setPaperSize(PrintSetup.A4_PAPERSIZE);
@@ -124,13 +125,24 @@ public class Controller {
             row.createCell(2).setCellValue(err[2]);
             row.createCell(3).setCellValue(err[3]);
         }
-        FileOutputStream fos = new FileOutputStream(filename);
-        sheet.autoSizeColumn(0);
-        sheet.autoSizeColumn(1);
-        sheet.autoSizeColumn(2);
-        sheet.autoSizeColumn(3);
-        wb.write(fos);
-        fos.close();
+        try {
+            FileOutputStream fos = new FileOutputStream(filename);
+            sheet.autoSizeColumn(0);
+            sheet.autoSizeColumn(1);
+            sheet.autoSizeColumn(2);
+            sheet.autoSizeColumn(3);
+            wb.write(fos);
+            fos.close();
+        }catch (IOException e){
+            textArea.appendText("Ошибка записи файла с ошибками: "+e.getLocalizedMessage()+"\n");
+        }
     }
-
+@PostConstruct
+    public void init() {
+        if (Objects.equals(System.getProperty("os.name"), "Linux")){
+            dir="~/";
+        }else{
+            dir="d:/";
+        }
+    }
 }

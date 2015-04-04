@@ -10,11 +10,7 @@ import java.util.List;
 /**
  * Created by Necros on 02.04.2015.
  */
-@Configuration
+
 public class ServicesFactory {
-    private List<String> ginecologServices;
-    @Bean
-    public List<String> getGinecologSerices(){
-     return ginecologServices;
-    }
+
 }
