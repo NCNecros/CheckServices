@@ -1,5 +1,7 @@
 package company;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.testng.AbstractTestNGSpringContextTests;
 import org.testng.annotations.BeforeMethod;
@@ -18,6 +20,7 @@ import static org.testng.Assert.assertTrue;
 @ContextConfiguration(classes = AppConfig.class)
 public class TreatmentTest extends AbstractTestNGSpringContextTests {
     SimpleDateFormat dateFormat = new SimpleDateFormat("dd.MM.yyyy");
+    private static final Logger logger = LoggerFactory.getLogger(TreatmentTest.class);
     private Treatment treatment;
 
     @BeforeMethod
@@ -39,6 +42,7 @@ public class TreatmentTest extends AbstractTestNGSpringContextTests {
                 treatment));
         treatment.setDatn(dateFormat.parse("01.01.2015"));
         treatment.setDato(dateFormat.parse("01.01.2015"));
+        logger.debug(treatment.toString());
         assertEquals(treatment.checkUslugi().get(0), "1111\tИванов Иван Иванович\t01.01.2015\tсодержит обращение с незакрытыми мероприятиями");
 
     }

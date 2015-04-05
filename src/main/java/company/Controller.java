@@ -10,11 +10,11 @@ import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.FileHeader;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
-import org.springframework.stereotype.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
-import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.*;
@@ -25,10 +25,10 @@ import java.util.stream.Collectors;
  */
 @org.springframework.stereotype.Service
 public class Controller{
-    String dir;
+    private String dir;
     @FXML
     private TextArea textArea;
-
+    private static final Logger logger = LoggerFactory.getLogger(Controller.class);
     @FXML
     public void selectFile(ActionEvent actionEvent) throws IOException, ZipException {
         FileChooser fileChooser = new FileChooser();
@@ -36,6 +36,7 @@ public class Controller{
         fileChooser.setTitle("Выберите файл счета");
         File file = fileChooser.showOpenDialog(null);
         if (file != null) {
+            logger.debug("Файл не выбран");
             processFile(file);
         }
     }

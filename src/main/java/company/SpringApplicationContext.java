@@ -3,9 +3,6 @@ package company;
 import org.springframework.beans.BeansException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.*;
-
-import java.util.Objects;
 
 /**
  * Created by Necros on 01.04.2015.

@@ -6,9 +6,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 
-import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.FileReader;
+import java.io.Reader;
+
 
 /**
  * Created by Necros on 31.03.2015.

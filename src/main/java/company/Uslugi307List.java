@@ -1,6 +1,6 @@
 package company;
 
-import org.simpleframework.xml.*;
+import org.simpleframework.xml.ElementList;
 
 import java.util.ArrayList;
 import java.util.List;
