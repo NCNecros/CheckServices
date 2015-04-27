@@ -180,7 +180,6 @@
             <string>B01.031.009</string>
             <string>B01.031.010</string>
             <string>B01.031.012</string>
-            <string>B01.031.013</string>
             <string>B01.031.014</string>
         </uslugi>
         <doctor>педиатр</doctor>
@@ -192,6 +191,7 @@
             <string>B01.031.004</string>
             <string>B01.031.006</string>
             <string>B01.031.008</string>
+            <string>B01.031.013</string>
         </uslugi>
         <doctor>педиатр участковый</doctor>
         <obrashenie>B01.031.016.01</obrashenie>

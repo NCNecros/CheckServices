@@ -81,7 +81,7 @@ public class Treatment {
         checkForServiceDuplicates();
         checkForMissedService();
         checkIncorrectDateOfService();
-        checkForReduantServices();
+//        checkForReduantServices();
         return result;
     }
 

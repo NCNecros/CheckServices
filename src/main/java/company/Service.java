@@ -54,6 +54,10 @@ public class Service {
     @Override
     public boolean equals(Object obj) {
         Service otheService = (Service) obj;
-        return getDatn().equals(otheService.getDatn()) && getKusl().equalsIgnoreCase(otheService.getKusl());
+        try {
+            return getDatn().equals(otheService.getDatn()) && getKusl().equalsIgnoreCase(otheService.getKusl());
+        }catch (Exception e){
+            return false;
+        }
     }
 }
