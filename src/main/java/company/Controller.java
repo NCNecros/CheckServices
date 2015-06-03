@@ -15,11 +15,13 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -94,6 +96,25 @@ public class Controller{
             generalErrors.add("Реестр содержит записи на несколько плательщиков");
         }
 
+        List<String> ogrnList= humanMap.values().stream().flatMap(e -> e.getTreatmentList().values().stream()).map(Treatment::getOGRN).collect(Collectors.toList());
+        Map<String, Long> stringLongMap = ogrnList.stream().collect(Collectors.groupingBy(o->o, Collectors.counting()));
+        Long maxCount = stringLongMap.values().stream().max((o1, o2) -> o1.compareTo(o2)).get();
+
+        Iterator iterator = stringLongMap.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, Long> entry = (Map.Entry<String, Long>) iterator.next();
+            if (entry.getValue() == maxCount) {
+                iterator.remove();
+            }
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
+        List<Treatment> treatments = humanMap.values().stream().flatMap(human -> human.getTreatmentList().values().stream()).collect(Collectors.toList());
+        treatments.stream().filter(treatment -> stringLongMap.containsKey(treatment.getOGRN()))
+                .forEach(e -> errors.add(e.getParent().toString() + "\t("+sdf.format(e.getDatn())+") посторонний ОГРН"));
+        
+        Map<String, Long> sortedMap = stringLongMap.entrySet().stream().sorted((o1, o2) -> o2.getKey().compareTo(o1.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+        sortedMap.remove(sortedMap.entrySet().iterator().next().getKey());
+        sortedMap.entrySet().stream().forEach(e-> System.out.println(e.getKey()+ " "+e.getValue()));
         String pathToFile = file.getParentFile().getAbsolutePath();
         String fileName = file.getName();
 //            saveErrorsToFile(errors, pathToFile + File.separator + fileName + "_ошибки.csv", "utf-8");
