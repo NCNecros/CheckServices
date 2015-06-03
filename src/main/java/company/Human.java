@@ -1,20 +1,27 @@
 package company;
 
-import org.jetbrains.annotations.NotNull;
-
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Necros on 19.03.2015.
  */
 public class Human implements Comparable {
 
-    private String fio="";
-    private String ima="";
     SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
-    public Human(){};
+    String otch = "";
+    Date datr = new Date();
+    String isti = "";
 
+    ;
+    Map<Double, Treatment> treatmentList = new HashMap<>();
+    private String fio = "";
+    private String ima = "";
+    public Human() {
+    }
     public Human(String isti, String fio, String ima, String otch, Date datr) {
         this.fio = fio;
         this.ima = ima;
@@ -22,11 +29,6 @@ public class Human implements Comparable {
         this.datr = datr;
         this.isti = isti;
     }
-
-    String otch="";
-    Date datr=new Date();
-    String isti="";
-    Map<Double, Treatment> treatmentList = new HashMap<>();
 
     public String getFio() {
         return fio;
@@ -55,12 +57,13 @@ public class Human implements Comparable {
     public Date getDatr() {
         return datr;
     }
-    public String getReadableDatr(){
-        return sdf.format(datr);
-    }
 
     public void setDatr(Date datr) {
         this.datr = datr;
+    }
+
+    public String getReadableDatr() {
+        return sdf.format(datr);
     }
 
     public String getIsti() {
@@ -79,26 +82,10 @@ public class Human implements Comparable {
         this.treatmentList = treatmentList;
     }
 
-    public List<Error> checkErrors() {
-        List<Error> result = new ArrayList<>();
-        List<Treatment> list = new ArrayList<>(treatmentList.values());
-        for (Treatment treatment : list) {
-            result.addAll(treatment.checkUslugi());
-            List<Treatment> obrasheniesWithOutCurrent = new ArrayList<>(list);
-            obrasheniesWithOutCurrent.remove(treatment);
-            for (Treatment otherObr : obrasheniesWithOutCurrent) {
-                Boolean res = otherObr.getDoctor().equalsIgnoreCase(treatment.getDoctor()) &&
-                        otherObr.getMkb().equalsIgnoreCase(treatment.getMkb());
-                if (res && treatment.getUslugi().values().stream().anyMatch(e -> !e.getKusl().startsWith("B04"))) {
-                    result.add(new Error(this, treatment,"более одного обращения"));
-                }
-            }
-        }
-        return result;
+    public String getFullName() {
+        return fio + " " + ima + " " + otch;
     }
-public String getFullName(){
-    return fio+" "+ima+" "+otch;
-}
+
     @Override
     public int compareTo(Object o) {
         Human otherHuman = (Human) o;

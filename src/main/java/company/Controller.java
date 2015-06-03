@@ -13,6 +13,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
@@ -29,13 +30,14 @@ import java.util.stream.Collectors;
 public class Controller {
     private static final Logger logger = LoggerFactory.getLogger(Controller.class);
     private String dir;
+    HumanChecker humanChecker;
+
     @FXML
     private TextArea textArea;
 
     @FXML
     public void selectFile(ActionEvent actionEvent) throws IOException, ZipException {
         FileChooser fileChooser = new FileChooser();
-//        fileChooser.setInitialDirectory(new File(dir));
         fileChooser.setTitle("Выберите файл счета");
         File file = fileChooser.showOpenDialog(null);
         if (file != null) {
@@ -60,6 +62,7 @@ public class Controller {
     }
 
     private void processFile(File file) throws IOException, ZipException {
+        humanChecker = (HumanChecker) SpringApplicationContext.getBean("humanChecker");
         dir = file.getParentFile().getAbsolutePath();
         Path outdir = Files.createTempDirectory("_tmp" + Math.random());
         DBFHelper helper = new DBFHelper();
@@ -82,7 +85,7 @@ public class Controller {
 
         List<Error> errors = new ArrayList<>();
         for (Human human : humanMap.values()) {
-            errors.addAll(human.checkErrors());
+            errors.addAll(humanChecker.checkErrors(human));
         }
         List<Treatment> treatmentList = new ArrayList<>();
         humanMap.values().stream().filter(h -> h.getTreatmentList() != null).forEach(h -> {
