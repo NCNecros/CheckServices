@@ -1,5 +1,6 @@
 package company;
 
+import org.jetbrains.annotations.NotNull;
 import org.simpleframework.xml.ElementList;
 
 import java.util.ArrayList;

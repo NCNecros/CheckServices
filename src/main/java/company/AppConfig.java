@@ -20,7 +20,6 @@ public class AppConfig {
     public Uslugi307List uslugi307() throws Exception {
         Reader reader = new FileReader(getClass().getClassLoader().getResource("Uslugi307.xml").getFile());
         Serializer serializer = new Persister();
-        Uslugi307List uslugi307List = serializer.read(Uslugi307List.class, reader);
-        return uslugi307List;
+        return serializer.read(Uslugi307List.class, reader);
     }
 }

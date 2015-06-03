@@ -4,6 +4,7 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import org.jetbrains.annotations.NotNull;
 
 /**
  * Created by Necros on 31.03.2015.

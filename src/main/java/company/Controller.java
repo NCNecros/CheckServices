@@ -8,14 +8,11 @@ import javafx.stage.FileChooser;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.FileHeader;
-import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
 
 import javax.annotation.PostConstruct;
 import java.io.*;
@@ -29,11 +26,12 @@ import java.util.stream.Collectors;
  * Created by Necros on 23.03.2015.
  */
 @org.springframework.stereotype.Service
-public class Controller{
+public class Controller {
+    private static final Logger logger = LoggerFactory.getLogger(Controller.class);
     private String dir;
     @FXML
     private TextArea textArea;
-    private static final Logger logger = LoggerFactory.getLogger(Controller.class);
+
     @FXML
     public void selectFile(ActionEvent actionEvent) throws IOException, ZipException {
         FileChooser fileChooser = new FileChooser();
@@ -92,12 +90,13 @@ public class Controller{
         });
 
         List<Error> generalErrors = new ArrayList<>();
-        if (humanMap.values().stream().flatMap(e-> e.getTreatmentList().values().stream()).map(Treatment::getOGRN).distinct().collect(Collectors.toList()).size()>1){
-            generalErrors.add(new Error(null,null,"Реестр содержит записи на несколько плательщиков"));
+        if (humanMap.values().stream().flatMap(e -> e.getTreatmentList().values().stream()).map(Treatment::getOGRN).distinct().collect(Collectors.toList()).size() > 1) {
+            generalErrors.add(new Error(new Human(), new Treatment(), "Реестр содержит записи на несколько плательщиков"));
+            errors.add(new Error(new Human(), new Treatment(), "Реестр содержит записи на несколько плательщиков"));
         }
 
-        List<String> ogrnList= humanMap.values().stream().flatMap(e -> e.getTreatmentList().values().stream()).map(Treatment::getOGRN).collect(Collectors.toList());
-        Map<String, Long> stringLongMap = ogrnList.stream().collect(Collectors.groupingBy(o->o, Collectors.counting()));
+        List<String> ogrnList = humanMap.values().stream().flatMap(e -> e.getTreatmentList().values().stream()).map(Treatment::getOGRN).collect(Collectors.toList());
+        Map<String, Long> stringLongMap = ogrnList.stream().collect(Collectors.groupingBy(o -> o, Collectors.counting()));
         Long maxCount = stringLongMap.values().stream().max(Long::compareTo).get();
 
         Iterator iterator = stringLongMap.entrySet().iterator();
@@ -110,15 +109,15 @@ public class Controller{
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
         List<Treatment> treatments = humanMap.values().stream().flatMap(human -> human.getTreatmentList().values().stream()).collect(Collectors.toList());
         treatments.stream().filter(treatment -> stringLongMap.containsKey(treatment.getOGRN()))
-                .forEach(e -> errors.add(new Error(e.getParent(),e,"посторонний ОГРН")));
+                .forEach(e -> errors.add(new Error(e.getParent(), e, "посторонний ОГРН")));
 
         Map<String, Long> sortedMap = stringLongMap.entrySet().stream().sorted((o1, o2) -> o2.getKey().compareTo(o1.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         sortedMap.remove(sortedMap.entrySet().iterator().next().getKey());
-        sortedMap.entrySet().stream().forEach(e-> System.out.println(e.getKey()+ " "+e.getValue()));
+        sortedMap.entrySet().stream().forEach(e -> System.out.println(e.getKey() + " " + e.getValue()));
         String pathToFile = file.getParentFile().getAbsolutePath();
         String fileName = file.getName();
 //            saveErrorsToFile(errors, pathToFile + File.separator + fileName + "_ошибки.csv", "utf-8");
-        saveErrorsToExcel(errors,generalErrors, pathToFile + File.separator + fileName + "_ошибки.xls");
+        saveErrorsToExcel(errors, generalErrors, pathToFile + File.separator + fileName + "_ошибки.xls");
         textArea.appendText(fileName + " проверка завершена\n");
     }
 
@@ -138,7 +137,7 @@ public class Controller{
         pw.close();
     }
 
-    private void saveErrorsToExcel(List<Error> errors, List<Error> generalErrors, String filename){
+    private void saveErrorsToExcel(List<Error> errors, List<Error> generalErrors, String filename) {
         Workbook wb = new HSSFWorkbook();
         Sheet sheet = wb.createSheet("Ошибки");
         sheet.getPrintSetup().setPaperSize(PrintSetup.A4_PAPERSIZE);
@@ -149,10 +148,10 @@ public class Controller{
         row.createCell(1).setCellValue("ФИО");
         row.createCell(2).setCellValue("Дата рождения");
         row.createCell(3).setCellValue("Ошибка");
-        for (Error error : generalErrors){
+        for (Error error : generalErrors) {
             counter++;
             row = sheet.createRow(counter);
-            Cell cell= row.createCell(0, Cell.CELL_TYPE_STRING);
+            Cell cell = row.createCell(0, Cell.CELL_TYPE_STRING);
             cell.setCellValue(error.getError());
             Font font = wb.createFont();
             font.setBold(true);
@@ -161,18 +160,38 @@ public class Controller{
             style.setFont(font);
             style.setAlignment(CellStyle.ALIGN_CENTER);
             cell.setCellStyle(style);
-            sheet.addMergedRegion(new CellRangeAddress(counter,counter,0,3));
+            sheet.addMergedRegion(new CellRangeAddress(counter, counter, 0, 3));
         }
         for (Error error : errors.stream()
                 .distinct()
-                .sorted((error1, error2)-> error1.getHuman().compareTo(error2.getHuman()))
+                .sorted((error1, error2) -> error1.getHuman().compareTo(error2.getHuman()))
                 .collect(Collectors.toList())) {
             counter++;
             row = sheet.createRow(counter);
-            row.createCell(0, Cell.CELL_TYPE_STRING).setCellValue(error.getHuman().getIsti());
-            row.createCell(1).setCellValue(error.getHuman().getFullName());
-            row.createCell(2).setCellValue(error.getHuman().getReadableDatr());
-            row.createCell(3).setCellValue("("+error.getTreatment().getReadableDatN()+") "+error.getError());
+            try {
+                row.createCell(0, Cell.CELL_TYPE_STRING).setCellValue(error.getHuman().getIsti());
+            } catch (NullPointerException e) {
+                row.createCell(0, Cell.CELL_TYPE_STRING).setCellValue("");
+            }
+            try {
+                row.createCell(1).setCellValue(error.getHuman().getFullName());
+            } catch (NullPointerException e) {
+                row.createCell(1).setCellValue("");
+            }
+            try {
+                row.createCell(2).setCellValue(error.getHuman().getReadableDatr());
+            } catch (NullPointerException e) {
+                row.createCell(2).setCellValue("");
+            }
+            try {
+                row.createCell(3).setCellValue("(" + error.getTreatment().getReadableDatN() + ") " + error.getError());
+            } catch (NullPointerException e) {
+                if (error.getError()!=null){
+                    row.createCell(3).setCellValue(error.getError());
+                }else {
+                    row.createCell(3).setCellValue("");
+                }
+            }
         }
         try {
             FileOutputStream fos = new FileOutputStream(filename);
@@ -182,16 +201,17 @@ public class Controller{
             sheet.autoSizeColumn(3);
             wb.write(fos);
             fos.close();
-        }catch (IOException e){
-            textArea.appendText("Ошибка записи файла с ошибками: "+e.getLocalizedMessage()+"\n");
+        } catch (IOException e) {
+            textArea.appendText("Ошибка записи файла с ошибками: " + e.getLocalizedMessage() + "\n");
         }
     }
-@PostConstruct
+
+    @PostConstruct
     public void init() {
-        if (Objects.equals(System.getProperty("os.name"), "Linux")){
-            dir="~/";
-        }else{
-            dir="d:/";
+        if (Objects.equals(System.getProperty("os.name"), "Linux")) {
+            dir = "~/";
+        } else {
+            dir = "d:/";
         }
     }
 }

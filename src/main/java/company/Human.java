@@ -1,5 +1,7 @@
 package company;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -8,8 +10,8 @@ import java.util.*;
  */
 public class Human implements Comparable {
 
-    String fio;
-    String ima;
+    private String fio="";
+    private String ima="";
     SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
     public Human(){};
 
@@ -21,9 +23,9 @@ public class Human implements Comparable {
         this.isti = isti;
     }
 
-    String otch;
-    Date datr;
-    String isti;
+    String otch="";
+    Date datr=new Date();
+    String isti="";
     Map<Double, Treatment> treatmentList = new HashMap<>();
 
     public String getFio() {
