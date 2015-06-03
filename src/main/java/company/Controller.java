@@ -82,7 +82,7 @@ public class Controller{
         helper.readFromP(outdir + File.separator + filelist.get("P"), humanMap);
         helper.readFromU(outdir + File.separator + filelist.get("U"), humanMap);
 
-        List<String> errors = new ArrayList<>();
+        List<Error> errors = new ArrayList<>();
         for (Human human : humanMap.values()) {
             errors.addAll(human.checkErrors());
         }
@@ -91,14 +91,14 @@ public class Controller{
             treatmentList.addAll(h.getTreatmentList().values());
         });
 
-        List<String> generalErrors = new ArrayList<>();
+        List<Error> generalErrors = new ArrayList<>();
         if (humanMap.values().stream().flatMap(e-> e.getTreatmentList().values().stream()).map(Treatment::getOGRN).distinct().collect(Collectors.toList()).size()>1){
-            generalErrors.add("Реестр содержит записи на несколько плательщиков");
+            generalErrors.add(new Error(null,null,"Реестр содержит записи на несколько плательщиков"));
         }
 
         List<String> ogrnList= humanMap.values().stream().flatMap(e -> e.getTreatmentList().values().stream()).map(Treatment::getOGRN).collect(Collectors.toList());
         Map<String, Long> stringLongMap = ogrnList.stream().collect(Collectors.groupingBy(o->o, Collectors.counting()));
-        Long maxCount = stringLongMap.values().stream().max((o1, o2) -> o1.compareTo(o2)).get();
+        Long maxCount = stringLongMap.values().stream().max(Long::compareTo).get();
 
         Iterator iterator = stringLongMap.entrySet().iterator();
         while (iterator.hasNext()) {
@@ -110,8 +110,8 @@ public class Controller{
         SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
         List<Treatment> treatments = humanMap.values().stream().flatMap(human -> human.getTreatmentList().values().stream()).collect(Collectors.toList());
         treatments.stream().filter(treatment -> stringLongMap.containsKey(treatment.getOGRN()))
-                .forEach(e -> errors.add(e.getParent().toString() + "\t("+sdf.format(e.getDatn())+") посторонний ОГРН"));
-        
+                .forEach(e -> errors.add(new Error(e.getParent(),e,"посторонний ОГРН")));
+
         Map<String, Long> sortedMap = stringLongMap.entrySet().stream().sorted((o1, o2) -> o2.getKey().compareTo(o1.getKey())).collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
         sortedMap.remove(sortedMap.entrySet().iterator().next().getKey());
         sortedMap.entrySet().stream().forEach(e-> System.out.println(e.getKey()+ " "+e.getValue()));
@@ -138,7 +138,7 @@ public class Controller{
         pw.close();
     }
 
-    private void saveErrorsToExcel(List<String> errors, List<String> generalErrors, String filename){
+    private void saveErrorsToExcel(List<Error> errors, List<Error> generalErrors, String filename){
         Workbook wb = new HSSFWorkbook();
         Sheet sheet = wb.createSheet("Ошибки");
         sheet.getPrintSetup().setPaperSize(PrintSetup.A4_PAPERSIZE);
@@ -149,11 +149,11 @@ public class Controller{
         row.createCell(1).setCellValue("ФИО");
         row.createCell(2).setCellValue("Дата рождения");
         row.createCell(3).setCellValue("Ошибка");
-        for (String error : generalErrors){
+        for (Error error : generalErrors){
             counter++;
             row = sheet.createRow(counter);
             Cell cell= row.createCell(0, Cell.CELL_TYPE_STRING);
-            cell.setCellValue(error);
+            cell.setCellValue(error.getError());
             Font font = wb.createFont();
             font.setBold(true);
             font.setFontHeightInPoints((short) 18);
@@ -163,17 +163,16 @@ public class Controller{
             cell.setCellStyle(style);
             sheet.addMergedRegion(new CellRangeAddress(counter,counter,0,3));
         }
-        for (String line : errors.stream()
+        for (Error error : errors.stream()
                 .distinct()
-                .sorted((e1, e2) -> e1.split("\t")[1].compareTo(e2.split("\t")[1]))
+                .sorted((error1, error2)-> error1.getHuman().compareTo(error2.getHuman()))
                 .collect(Collectors.toList())) {
             counter++;
-            String[] err = line.split("\t");
             row = sheet.createRow(counter);
-            row.createCell(0, Cell.CELL_TYPE_STRING).setCellValue(err[0]);
-            row.createCell(1).setCellValue(err[1]);
-            row.createCell(2).setCellValue(err[2]);
-            row.createCell(3).setCellValue(err[3]);
+            row.createCell(0, Cell.CELL_TYPE_STRING).setCellValue(error.getHuman().getIsti());
+            row.createCell(1).setCellValue(error.getHuman().getFullName());
+            row.createCell(2).setCellValue(error.getHuman().getReadableDatr());
+            row.createCell(3).setCellValue("("+error.getTreatment().getReadableDatN()+") "+error.getError());
         }
         try {
             FileOutputStream fos = new FileOutputStream(filename);

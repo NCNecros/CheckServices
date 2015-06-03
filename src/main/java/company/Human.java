@@ -10,7 +10,7 @@ public class Human implements Comparable {
 
     String fio;
     String ima;
-
+    SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
     public Human(){};
 
     public Human(String isti, String fio, String ima, String otch, Date datr) {
@@ -53,6 +53,9 @@ public class Human implements Comparable {
     public Date getDatr() {
         return datr;
     }
+    public String getReadableDatr(){
+        return sdf.format(datr);
+    }
 
     public void setDatr(Date datr) {
         this.datr = datr;
@@ -74,8 +77,8 @@ public class Human implements Comparable {
         this.treatmentList = treatmentList;
     }
 
-    public List<String> checkErrors() {
-        List<String> result = new ArrayList<>();
+    public List<Error> checkErrors() {
+        List<Error> result = new ArrayList<>();
         List<Treatment> list = new ArrayList<>(treatmentList.values());
         for (Treatment treatment : list) {
             result.addAll(treatment.checkUslugi());
@@ -85,14 +88,15 @@ public class Human implements Comparable {
                 Boolean res = otherObr.getDoctor().equalsIgnoreCase(treatment.getDoctor()) &&
                         otherObr.getMkb().equalsIgnoreCase(treatment.getMkb());
                 if (res && treatment.getUslugi().values().stream().anyMatch(e -> !e.getKusl().startsWith("B04"))) {
-                    SimpleDateFormat sdf = new SimpleDateFormat("dd.MM.yyyy");
-                    result.add(toString() + "\t("+sdf.format(treatment.getDatn())+") более одного обращения");
+                    result.add(new Error(this, treatment,"более одного обращения"));
                 }
             }
         }
         return result;
     }
-
+public String getFullName(){
+    return fio+" "+ima+" "+otch;
+}
     @Override
     public int compareTo(Object o) {
         Human otherHuman = (Human) o;

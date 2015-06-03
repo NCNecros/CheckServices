@@ -31,10 +31,14 @@ public class Treatment {
 
     private String OGRN;
     Map<Double, Service> uslugi = new HashMap<>();
-    List<String> result;
+    List<Error> result;
     List<String> services;
 
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd.MM.yyyy");
+
+    public String getReadableDatN(){
+        return simpleDateFormat.format(datn);
+    }
 
     @Autowired
     private Uslugi307List uslugi307List;
@@ -79,7 +83,7 @@ public class Treatment {
         this.parent = parent;
     }
 
-    public List<String> checkUslugi() {
+    public List<Error> checkUslugi() {
         result = new ArrayList<>();
         services = getUslugi().values().stream()
                 .map(Service::getKusl)
@@ -117,22 +121,22 @@ public class Treatment {
     private void checkIncorrectDateOfService() {
         List<Date> dates = getUslugi().values().stream().map(Service::getDatn).collect(Collectors.toList());
         if (!dates.contains(getDatn())) {
-            result.add(toString() + " нет услуги совпадающей с датой начала лечения");
+            addError("нет услуги совпадающей с датой начала лечения");
         }
         if (!dates.contains(getDato())){
-            result.add(toString() + " нет услуги совпадающей с датой окончания лечения");
+            addError("нет услуги совпадающей с датой окончания лечения");
         }
         if (getDatn()==null){
-            result.add(toString() + " дата окончания лечения не проставлена");
+            addError("дата окончания лечения не проставлена");
         }
     }
 
     private void addErrorForMissedObrashenie(String doctor) {
-        result.add(toString() + " отсутствует обращение - врач-" + doctor);
+        addError("отсутствует обращение - врач-" + doctor);
     }
 
     private void addErrorForReduantObrashenie(String doctor) {
-        result.add(toString() + " лишнее обращение - врач-" + doctor);
+        addError("лишнее обращение - врач-" + doctor);
     }
 
     private void checkForReduantDoctorService(List<String> uslugi, String obrashenie, String doctor) {
@@ -148,7 +152,7 @@ public class Treatment {
                 .collect(Collectors.toList());
 
         if (allServices.size() != servicesWithOutDuplicates.size()){
-            result.add(toString() + " содержит дубликаты услуг");
+            addError("содержит дубликаты услуг");
         }
     }
 
@@ -156,6 +160,9 @@ public class Treatment {
     public String toString() {
         return parent + "\t"
                 + "(" + simpleDateFormat.format(getDatn()) + ")";
+    }
+    private void addError(String error){
+        result.add(new Error(getParent(), this, error));
     }
 
     public Map<Double, Service> getUslugi() {
