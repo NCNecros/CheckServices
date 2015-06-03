@@ -15,11 +15,21 @@ import java.util.stream.Collectors;
 @Scope(value = "prototype")
 
 public class Treatment {
-    Date datn;
-    Date dato;
-    String mkb = "";
-    String doctor;
-    Human parent;
+    private Date datn;
+    private Date dato;
+    private String mkb = "";
+    private String doctor;
+    private Human parent;
+
+    public String getOGRN() {
+        return OGRN;
+    }
+
+    public void setOGRN(String OGRN) {
+        this.OGRN = OGRN;
+    }
+
+    private String OGRN;
     Map<Double, Service> uslugi = new HashMap<>();
     List<String> result;
     List<String> services;
@@ -111,6 +121,9 @@ public class Treatment {
         }
         if (!dates.contains(getDato())){
             result.add(toString() + " нет услуги совпадающей с датой окончания лечения");
+        }
+        if (getDatn()==null){
+            result.add(toString() + " дата окончания лечения не проставлена");
         }
     }
 

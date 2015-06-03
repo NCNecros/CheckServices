@@ -8,8 +8,11 @@ import javafx.stage.FileChooser;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
 import net.lingala.zip4j.model.FileHeader;
+import org.apache.poi.hssf.usermodel.HSSFCellStyle;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.hssf.util.HSSFColor;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,14 +79,25 @@ public class Controller{
         }
         helper.readFromP(outdir + File.separator + filelist.get("P"), humanMap);
         helper.readFromU(outdir + File.separator + filelist.get("U"), humanMap);
+
         List<String> errors = new ArrayList<>();
         for (Human human : humanMap.values()) {
             errors.addAll(human.checkErrors());
         }
+        List<Treatment> treatmentList = new ArrayList<>();
+        humanMap.values().stream().filter(h -> h.getTreatmentList() != null).forEach(h -> {
+            treatmentList.addAll(h.getTreatmentList().values());
+        });
+
+        List<String> generalErrors = new ArrayList<>();
+        if (humanMap.values().stream().flatMap(e-> e.getTreatmentList().values().stream()).map(Treatment::getOGRN).distinct().collect(Collectors.toList()).size()>1){
+            generalErrors.add("Реестр содержит записи на несколько плательщиков");
+        }
+
         String pathToFile = file.getParentFile().getAbsolutePath();
         String fileName = file.getName();
 //            saveErrorsToFile(errors, pathToFile + File.separator + fileName + "_ошибки.csv", "utf-8");
-        saveErrorsToExcel(errors, pathToFile + File.separator + fileName + "_ошибки.xls");
+        saveErrorsToExcel(errors,generalErrors, pathToFile + File.separator + fileName + "_ошибки.xls");
         textArea.appendText(fileName + " проверка завершена\n");
     }
 
@@ -103,7 +117,7 @@ public class Controller{
         pw.close();
     }
 
-    private void saveErrorsToExcel(List<String> errors, String filename){
+    private void saveErrorsToExcel(List<String> errors, List<String> generalErrors, String filename){
         Workbook wb = new HSSFWorkbook();
         Sheet sheet = wb.createSheet("Ошибки");
         sheet.getPrintSetup().setPaperSize(PrintSetup.A4_PAPERSIZE);
@@ -114,6 +128,20 @@ public class Controller{
         row.createCell(1).setCellValue("ФИО");
         row.createCell(2).setCellValue("Дата рождения");
         row.createCell(3).setCellValue("Ошибка");
+        for (String error : generalErrors){
+            counter++;
+            row = sheet.createRow(counter);
+            Cell cell= row.createCell(0, Cell.CELL_TYPE_STRING);
+            cell.setCellValue(error);
+            Font font = wb.createFont();
+            font.setBold(true);
+            font.setFontHeightInPoints((short) 18);
+            CellStyle style = wb.createCellStyle();
+            style.setFont(font);
+            style.setAlignment(CellStyle.ALIGN_CENTER);
+            cell.setCellStyle(style);
+            sheet.addMergedRegion(new CellRangeAddress(counter,counter,0,3));
+        }
         for (String line : errors.stream()
                 .distinct()
                 .sorted((e1, e2) -> e1.split("\t")[1].compareTo(e2.split("\t")[1]))

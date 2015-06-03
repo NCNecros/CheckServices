@@ -39,6 +39,7 @@ public class DBFHelper {
             human = humanMap.get(humanid);
             Treatment treatment = (Treatment) SpringApplicationContext.getBean("treatment");
             treatment.setParent(human);
+            treatment.setOGRN(((String) row[fieldList.get("PL_OGRN")]).trim());
             treatment.setDatn((Date) row[fieldList.get("DATN")]);
             treatment.setDato((Date) row[fieldList.get("DATO")]);
             human.getTreatmentList().put((Double) row[fieldList.get("SN")], treatment);
